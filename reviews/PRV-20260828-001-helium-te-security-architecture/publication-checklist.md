@@ -32,12 +32,36 @@ approval.
 
 ## Uncleared dependency inventory
 
-The `PUBLICATION-001` evidence list is the complete current inventory of
-records that block promotion because they are private or restricted, have
-redistribution `unknown` or `not-approved`, or are superseded records retained
-for append-only traceability. Public approved records
-PRV-20260828-001-E0023 through PRV-20260828-001-E0026 and
-PRV-20260828-001-E0033 do not independently block promotion.
+The `PUBLICATION-001` evidence list is the complete baseline inventory recorded
+at commit `684d9bf1fcb4030f5d3ace69b2364d431805db14`. The amendment inventory below
+supersedes its completeness claim without modifying the historical record.
+
+## Amendment publication correction
+
+Evidence: PRV-20260828-001-E0126.
+
+The package remains `private`. Promotion remains blocked. The complete current
+inventory is defined mechanically as **every evidence record E0001 through
+E0126 except the following cleared public records**:
+
+```text
+E0023-E0026
+E0033
+E0052
+E0056
+E0061-E0062
+E0072-E0084
+E0100
+E0115-E0119
+E0124
+```
+
+Every unlisted record is private or restricted, has redistribution `unknown`
+or `not-approved`, is a superseded or withdrawn record retained for append-only
+traceability, or is private review metadata. Clearing only the baseline list
+is insufficient. No promotion is available until a responsible human reviews
+this current inventory, clears or removes every dependency without breaking
+traceability, and personally records a valid `HUMAN-PROMOTION-NNN`.
 
 ## Structured human promotion contract
 

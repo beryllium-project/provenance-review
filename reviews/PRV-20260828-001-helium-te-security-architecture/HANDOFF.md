@@ -9,28 +9,38 @@ Status: `Complete`
 
 ## Overall position
 
-The private review is complete for Helium `for-review` commit
-`1ab289c066b69acdd8b55c9f77055b0145be1316`. Internal lineage, approved local
-research, the allowlisted public landscape, deep provenance, falsification,
-attribution, durable output, independent synthesis audit, and maintained
-validation are complete.
+The private amendment is complete and validated for Helium `for-review` commit
+`1ab289c066b69acdd8b55c9f77055b0145be1316` under confirmed scope evidence
+PRV-20260828-001-E0042. The committed baseline at `684d9bf` remains the
+append-only comparison point. All independent audit findings are resolved.
 
-The strongest supported relationships are:
+The strongest amended relationships are:
 
-- documented influence from foundational Type Enforcement and Flask/SELinux
-  on the source-type, target-type, object-class, and permission tuple;
+- verified source lineage from Beryllium minimal pathfinder `cc6029a` into
+  exact fixed Sv39x4, validation, table-initialization, root-encoding, and
+  generic runtime/trap source lines at TE checkpoint `511187f`;
+- documented minimal-pathfinder predecessor concepts for policy/mechanism
+  separation, identifiers versus authority, absent mappings, and fail-closed
+  handling, without claiming those broader concepts as inherited source lines;
+- documented Flask, SELinux, Xen XSM/FLASK, and RISC-V influence on the
+  Beryllium TE framing and vocabulary at `511187f`;
 - strong prior-art relationships for policy-gated mapping or exposure,
   separation of relationship or reachability authority from later use, and
-  policy-derived fail-closed hardware permissions; and
+  policy-derived fail-closed hardware permissions;
+- adjacent, broadly analogous precedent from Petroni et al. for asynchronous
+  policy-versus-live-AVC consistency monitoring; and
 - unresolved origin for the exact policy-only `OPEN` name and no-PTE
-  representation, one-rule non-composition, and runtime TE-to-G-stage
-  readback with terminal divergence handling.
+  representation, one-rule non-composition, direct Beryllium-to-standalone
+  transfer, and exact post-install TE-to-G-stage readback with terminal
+  divergence handling.
 
-No verified source lineage or affirmative independent convergence was found.
-The target's supported repository implementation author is James Morris at
-the 2026-08-04 sanitized snapshot, which includes a Copilot co-authorship
-trailer. That metadata does not establish conceptual origin or responsible-
-human approval.
+The earliest supported selected-mechanism implementation is Beryllium
+`511187f9d1f44c322e3a4a11347584fd8a20dc72` at
+`2026-07-20T14:51:03Z`. James Morris is the supported Beryllium
+implementation author, and the commit records Copilot co-authorship. James
+Morris is also the supported author and committer of the later standalone
+snapshot, but underlying standalone line authorship, direct transfer, and
+conceptual origin remain unresolved.
 
 ## Exact target state
 
@@ -41,6 +51,11 @@ human approval.
 - Target chronology boundary: 19 sanitized ancestor commits from
   `b3994e52663dab03d8025db2750a0650aa40e80c`; original internal development
   history intentionally absent
+- Supplemental Beryllium cutoff: only evidence authored or committed no later
+  than `2026-08-04T08:31:12Z`
+- Earliest selected-mechanism predecessor:
+  `workspace://beryllium-repo` commit
+  `511187f9d1f44c322e3a4a11347584fd8a20dc72`
 - Distribution: `private`
 - Intended distribution: request `public-candidate`
 
@@ -52,32 +67,37 @@ output are complete.
 
 ## Blockers
 
-- No blocker remains for the completed private review.
+- No analytical blocker remains for the private amendment.
 - Promotion to `public-candidate` is blocked: private target evidence and
   retained sources with restricted, not-approved, or unknown redistribution
   remain evidence dependencies, and no responsible-human promotion record
   exists.
-- High-priority retrieval gaps are the Flask Security Policy Module permission
-  inventory, restricted DTOS design reports, the SAT Design Overview, and
-  SmMTT public activity after 2026-08-18.
-- Original pre-snapshot target history remains outside the confirmed
-  `for-review` boundary.
+- High-priority retrieval gaps now also include original SELinux `file:map`,
+  FreeBSD mapping-right and maximum-permission, Xen grant-map, and pKVM patch
+  discussions; `cap-talk`; the sun4v hypervisor API; and pre-cutoff VMware
+  DirectPath documentation.
+- Original seL4 and CHERI discussion-archive records remain unavailable; the
+  versioned manuals and specifications remain the substantive evidence.
+- The former standalone `local-history` ref and `c8d1032` anchor remain
+  unavailable, preventing direct proof of Beryllium-to-standalone transfer.
 
 ## Validation status
 
-- `bash ./scripts/validate-review.sh reviews/PRV-20260828-001-helium-te-security-architecture` - PASS on 2026-08-28.
+- Baseline completion validation passed on 2026-08-28 at evidence
+  PRV-20260828-001-E0041.
+- `bash ./scripts/validate-review.sh --baseline 684d9bf1fcb4030f5d3ace69b2364d431805db14 reviews/PRV-20260828-001-helium-te-security-architecture` - PASS in completion mode on 2026-08-28.
 - `bash ./tests/validate-agent.sh` - PASS on 2026-08-28.
 - `git --no-pager diff --check` - PASS on 2026-08-28.
-- Append-only history integrity was not mechanically compared because no prior baseline was supplied.
-- Evidence ID: PRV-20260828-001-E0041.
+- Evidence ID: PRV-20260828-001-E0126.
+- The committed baseline at `684d9bf1fcb4030f5d3ace69b2364d431805db14`
+  is available for append-only baseline comparison.
 
 ## Exact next action
 
-A responsible human should review `publication-checklist.md` and the
-redistribution fields in `evidence-ledger.md`. Keep the package private unless
-the uncleared dependencies are removed or cleared and the responsible human
-personally adds a complete `HUMAN-PROMOTION-001` record. Agent completion of
-the review is not that promotion decision.
+A responsible human should review `source-scope-summary.md`, `report.md`,
+`attribution.md`, and `publication-checklist.md`. Keep the package private
+unless every uncleared dependency is resolved and the responsible human
+personally records a valid promotion.
 
 ## Continuation paths
 
@@ -90,6 +110,7 @@ the review is not that promotion decision.
 - Search record: `search-log.md`
 - Inaccessible resources: `inaccessible-resources.md`
 - Publication gate: `publication-checklist.md`
+- Quick source scope: `source-scope-summary.md`
 
 ## History integrity
 

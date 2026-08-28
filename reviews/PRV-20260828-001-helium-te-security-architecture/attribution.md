@@ -111,6 +111,45 @@ Status: `Complete`
 - Alternatives/counter-evidence: Pre-snapshot commits, prompts, design notes, collaborators, or external sources may identify earlier implementation or conceptual contributions.
 - Limitations: Git metadata, co-authorship trailers, and absence of a found source do not prove conceptual origin, contribution shares, independent convergence, or responsible-human approval.
 
+## ATTRIBUTION-009
+
+- Classification: verified source lineage
+- Specific contribution: Exact fixed Sv39x4, address/path validation, table initialization, root encoding, map-validation fragments, and generic runtime/trap source lines inherited by the Beryllium TE pathfinder.
+- Candidate source or contributor: Beryllium minimal RISC-V policy pathfinder commit `cc6029acdd5df1fc14157c4faea4cc047e49a90e`.
+- Aspect IDs: ASPECT-002, ASPECT-003
+- Evidence IDs: PRV-20260828-001-E0105, PRV-20260828-001-E0106, PRV-20260828-001-E0107, PRV-20260828-001-E0109
+- Confidence: High
+- Evidence basis: Direct Git ancestry places TE checkpoint `511187f` immediately after `cc6029a`, and exact blame preserves the enumerated fixed-G-stage and runtime/trap lines. Minimal policy/mechanism and absent-mapping concepts are documented predecessor context, not verified inherited implementation. Chronology: CHRON-018 and CHRON-019.
+- Credit recommendation: Credit James Morris for the exact inherited minimal-pathfinder source lines and their adaptation in the TE checkpoint; describe policy/mechanism, identifiers-versus-authority, absent-mapping, and generic fail-closed statements as documented predecessor concepts only.
+- Alternatives/counter-evidence: Shared project methodology may also explain similarities, but direct commit ancestry and retained lines establish implementation transfer for the bounded scaffolding.
+- Limitations: This verified lineage does not cross the repository boundary into standalone Helium and does not establish conceptual origin.
+
+## ATTRIBUTION-010
+
+- Classification: adjacent precedent
+- Specific contribution: Asynchronous independent comparison of protected policy state with live SELinux AVC enforcement-decision state.
+- Candidate source or contributor: Nick L. Petroni Jr., Timothy Fraser, Aaron Walters, and William A. Arbaugh.
+- Aspect IDs: ASPECT-003
+- Evidence IDs: PRV-20260828-001-E0070, PRV-20260828-001-E0124
+- Confidence: High
+- Evidence basis: The 2006 USENIX Security paper independently and asynchronously recomputes OR-composed expected SELinux permission masks from protected policy tables and compares them with live AVC entries. Chronology: CHRON-026, CHRON-035, and CHRON-046.
+- Credit recommendation: Credit the Petroni et al. paper for broadly analogous policy-versus-live-AVC consistency monitoring.
+- Alternatives/counter-evidence: It checks a cache asynchronously and notifies rather than validating a PTE at installation or terminating immediately.
+- Limitations: It is not mapping reconciliation, PTE readback, admission control, or immediate fail-stop handling; the target's exact sequence remains unresolved.
+
+## ATTRIBUTION-011
+
+- Classification: adjacent precedent
+- Specific contribution: Complete selected-grant models that require all relevant rights or deny across a descriptor, capability, or policy-module set.
+- Candidate source or contributor: Capsicum, TrustedBSD MAC, seL4, and CHERI.
+- Aspect IDs: ASPECT-003
+- Evidence IDs: PRV-20260828-001-E0052, PRV-20260828-001-E0061, PRV-20260828-001-E0062, PRV-20260828-001-E0072, PRV-20260828-001-E0071
+- Confidence: High
+- Evidence basis: Capsicum operations require complete descriptor rights, TrustedBSD denies if any active policy denies, and seL4 or CHERI use complete selected capabilities. Chronology: CHRON-025, CHRON-032, CHRON-036, and CHRON-037.
+- Credit recommendation: Credit each system only for its own complete-grant or restrictive-composition model; do not describe any as the source of one-rule TE non-composition.
+- Alternatives/counter-evidence: SELinux ordinary allow permissions accumulate, and seL4 may silently downgrade requested rights.
+- Limitations: These models differ materially in syntax, authority representation, and failure behavior.
+
 ## Attribution boundary
 
 Credit only the specific contribution supported by primary evidence. Git
