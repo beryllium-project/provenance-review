@@ -66,4 +66,6 @@ bash ./tests/validate-agent.sh
 git diff --check
 ```
 
-No remote, publication, or release workflow is configured.
+A private `origin` remote is configured at
+`https://github.com/beryllium-project/provenance-review.git`. No publication
+or release workflow is configured.

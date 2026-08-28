@@ -23,8 +23,9 @@ validation.
 ## Current state
 
 - Branch: `main`
-- Remote: none
-- Repository history: initial implementation committed locally
+- Remote: private `origin` at
+  `https://github.com/beryllium-project/provenance-review.git`
+- Repository history: initial implementation pushed to `origin/main`
 - Implementation: complete and validated
 - Publication status: private, not approved for release
 - Validation: `bash ./tests/validate-agent.sh` and `git diff --check` pass
