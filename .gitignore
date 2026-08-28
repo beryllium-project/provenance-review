@@ -1,0 +1,18 @@
+# Private, licensed, and user-supplied evidence is never tracked.
+/inbox/**
+!/inbox/README.md
+/sources/quarantine/**
+!/sources/quarantine/README.md
+
+# Disposable acquisition and extraction workspace.
+/scratch/**
+!/scratch/README.md
+
+# Generated local state.
+/.copilot/
+/.claude/
+/.test-output/
+/report.*.json
+*.tmp
+*.swp
+*~
