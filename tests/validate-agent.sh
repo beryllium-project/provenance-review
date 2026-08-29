@@ -149,6 +149,72 @@ append_superseding_evidence() {
 EOF
 }
 
+append_prior_art_iteration() {
+    local summary=$1
+    local iteration_id=$2
+    local iteration_date=$3
+    local supersedes=$4
+    local evidence_id=${5:-PRV-20000101-001-E0002}
+    cat >>"$summary" <<EOF
+
+## $iteration_id
+
+- Date: $iteration_date
+- Supersedes: $supersedes
+- Change reason: Synthetic appended iteration.
+- Bottom line: The fixture still records only a fictional predecessor relationship.
+- Implementation lineage: The synthetic marker is defined by the fixture rather than inherited from real code.
+- Documented influence: None documented.
+- Distinct or unresolved: No real conceptual-origin question is resolved.
+- Credit framing: Credit only the synthetic fixture author for the test record.
+- Aspect IDs: ASPECT-001
+- Evidence IDs: $evidence_id
+- Chronology IDs: CHRON-001
+- Confidence: High
+- Evidence basis: The fixture intentionally defines the marker and chronology.
+- Alternatives/counter-evidence: Any arbitrary fixture text could exercise the same contract.
+- Limitations: Synthetic evidence cannot establish real provenance.
+- Administrative: no
+EOF
+}
+
+refresh_prior_art_after_supersession() {
+    local summary=$1
+    awk '
+        BEGIN {
+            before_iterations = 1
+        }
+        /^## PRIOR-ART-ITERATION-001$/ {
+            before_iterations = 0
+        }
+        before_iterations && /^Latest iteration: `PRIOR-ART-ITERATION-001`$/ {
+            print "Latest iteration: `PRIOR-ART-ITERATION-002`"
+            next
+        }
+        before_iterations && /^Latest updated: `2000-01-01`$/ {
+            print "Latest updated: `2000-01-02`"
+            next
+        }
+        before_iterations && /^- Based on iteration: PRIOR-ART-ITERATION-001$/ {
+            print "- Based on iteration: PRIOR-ART-ITERATION-002"
+            next
+        }
+        before_iterations && /^- Evidence IDs: PRV-20000101-001-E0002$/ {
+            print "- Evidence IDs: PRV-20000101-001-E0004"
+            next
+        }
+        before_iterations && /^\| Fictional private predecessor \| None \|/ {
+            sub(/PRV-20000101-001-E0002/, "PRV-20000101-001-E0004")
+        }
+        {
+            print
+        }
+    ' "$summary" >"$summary.tmp" &&
+        mv -- "$summary.tmp" "$summary"
+    append_prior_art_iteration "$summary" PRIOR-ART-ITERATION-002 \
+        2000-01-02 PRIOR-ART-ITERATION-001 PRV-20000101-001-E0004
+}
+
 required_repository_files=(
     README.md
     HANDOFF.md
@@ -160,10 +226,13 @@ required_repository_files=(
     scripts/new-review.sh
     scripts/validate-review.sh
     scripts/git-readonly.sh
+    scripts/render-review.py
+    tests/test-render-review.py
 )
 
 required_artifacts=(
     scope.md
+    prior-art-summary.md
     report.md
     aspect-map.md
     chronology.md
@@ -218,6 +287,9 @@ for script in \
         fail "script is not executable: ${script#"$repository_root/"}"
 done
 
+python3 "$repository_root/tests/test-render-review.py" ||
+    fail "review HTML renderer tests failed"
+
 require_text .gitignore '/inbox/**'
 require_text .gitignore '/sources/quarantine/**'
 require_text .gitignore '/scratch/**'
@@ -244,6 +316,11 @@ require_text scripts/validate-review.sh '--draft'
 require_text scripts/validate-review.sh '--baseline'
 require_text templates/scope.md \
     'Scope freeze, Aspect decomposition, Internal lineage,'
+require_text templates/prior-art-summary.md 'Latest iteration: `None`'
+require_text templates/prior-art-summary.md \
+    '## Current at-a-glance projection'
+require_text templates/prior-art-summary.md \
+    'PRIOR-ART-ITERATION-NNN'
 require_text templates/publication-checklist.md \
     '## HUMAN-PROMOTION-NNN'
 require_text reviews/README.md \
@@ -352,6 +429,8 @@ if ((${#contract_files[@]} > 0)); then
         fail "agent/skill contracts must reject similarity-only provenance claims"
     grep -Eiq 'append-only' "${contract_files[@]}" ||
         fail "agent/skill contracts must state append-only expectations"
+    grep -Fq 'prior-art-summary.md' "${contract_files[@]}" ||
+        fail "agent/skill contracts must require prior-art-summary.md"
 fi
 
 fixture=$repository_root/tests/fixtures/valid-review/PRV-20000101-001-synthetic-fixture
@@ -406,6 +485,15 @@ if [[ $test_root == "$repository_root/.test-output/validate-agent" ]]; then
 
         for created in "$first_created" "$second_created"; do
             [[ -n $created ]] || continue
+            [[ -f $test_root/$created/prior-art-summary.md ]] ||
+                fail "generated scaffold is missing prior-art-summary.md: $created"
+            grep -Fqx 'Latest iteration: `None`' \
+                "$test_root/$created/prior-art-summary.md" ||
+                fail "generated scaffold has an invalid prior-art latest pointer: $created"
+            if grep -Eq '^## PRIOR-ART-ITERATION-[0-9]{3}$' \
+                "$test_root/$created/prior-art-summary.md"; then
+                fail "generated scaffold unexpectedly contains a prior-art iteration: $created"
+            fi
             bash "$repository_root/scripts/validate-review.sh" --draft \
                 "$test_root/$created" ||
                 fail "generated scaffold failed draft validation: $created"
@@ -518,6 +606,177 @@ if [[ $test_root == "$repository_root/.test-output/validate-agent" ]]; then
         printf '\n/home/example/private\n' >>"$invalid_path/report.md"
         expect_failure "absolute workstation path" \
             "absolute workstation path" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-missing")
+        rm -- "$invalid_path/prior-art-summary.md"
+        expect_failure "missing prior-art summary" \
+            "missing required artifact: prior-art-summary.md" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-latest")
+        sed -i \
+            's/^Latest iteration: `PRIOR-ART-ITERATION-001`$/Latest iteration: `PRIOR-ART-ITERATION-002`/' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "malformed prior-art latest pointer" \
+            "Latest iteration must identify highest iteration PRIOR-ART-ITERATION-001" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-latest-date")
+        sed -i 's/^Latest updated: `2000-01-01`$/Latest updated: `2000-01-02`/' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "mismatched prior-art latest date" \
+            "Latest updated must equal PRIOR-ART-ITERATION-001 Date 2000-01-01" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-duplicate-latest")
+        printf '\nLatest iteration: `PRIOR-ART-ITERATION-001`\n' \
+            >>"$invalid_path/prior-art-summary.md"
+        expect_failure "duplicate prior-art latest pointer" \
+            "must contain exactly one 'Latest iteration' field" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-duplicate-date")
+        printf '\nLatest updated: `2000-01-01`\n' \
+            >>"$invalid_path/prior-art-summary.md"
+        expect_failure "duplicate prior-art latest date" \
+            "must contain exactly one 'Latest updated' field" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-date")
+        sed -i \
+            '/^## PRIOR-ART-ITERATION-001$/,$s/^- Date: 2000-01-01$/- Date: 2000-13-01/' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "malformed prior-art iteration date" \
+            "PRIOR-ART-ITERATION-001 has invalid Date: 2000-13-01" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-id")
+        sed -i \
+            -e 's/^Latest iteration: `PRIOR-ART-ITERATION-001`$/Latest iteration: `PRIOR-ART-ITERATION-002`/' \
+            -e 's/^- Based on iteration: PRIOR-ART-ITERATION-001$/- Based on iteration: PRIOR-ART-ITERATION-002/' \
+            -e 's/^## PRIOR-ART-ITERATION-001$/## PRIOR-ART-ITERATION-002/' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "noncontiguous prior-art iteration ID" \
+            "expected PRIOR-ART-ITERATION-001, found PRIOR-ART-ITERATION-002" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-supersedes")
+        sed -i \
+            '/^## PRIOR-ART-ITERATION-001$/,$s/^- Supersedes: None$/- Supersedes: PRIOR-ART-ITERATION-000/' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "invalid first prior-art supersedes" \
+            "PRIOR-ART-ITERATION-001 must supersede None" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-reference")
+        sed -i \
+            '/^## PRIOR-ART-ITERATION-001$/,$s/^- Evidence IDs: PRV-20000101-001-E0002$/- Evidence IDs: PRV-20000101-001-E9999/' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "invalid prior-art evidence reference" \
+            "unresolved evidence reference: PRV-20000101-001-E9999" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-confidence")
+        sed -i \
+            '/^## PRIOR-ART-ITERATION-001$/,$s/^- Confidence: High$/- Confidence: Certain/' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "invalid prior-art confidence" \
+            "PRIOR-ART-ITERATION-001 has invalid Confidence: Certain" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-administrative")
+        sed -i \
+            '/^## PRIOR-ART-ITERATION-001$/,$s/^- Administrative: no$/- Administrative: maybe/' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "invalid prior-art administrative value" \
+            "PRIOR-ART-ITERATION-001 has invalid Administrative value: maybe" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-current")
+        sed -i \
+            's/^- Based on iteration: PRIOR-ART-ITERATION-001$/- Based on iteration: None/' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "prior-art current/latest mismatch" \
+            "current projection Based on iteration must equal PRIOR-ART-ITERATION-001" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-classification")
+        sed -i \
+            's/| unresolved | Exercises valid unlinked private-source handling/| copied | Exercises valid unlinked private-source handling/' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "invalid prior-art classification" \
+            "invalid Relationship/classification: copied" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-public-unlinked")
+        awk '
+            $0 == "## PRV-20000101-001-E0002" {
+                active = 1
+            }
+            active && /^- Sensitivity: private$/ {
+                print "- Sensitivity: public"
+                active = 0
+                next
+            }
+            {
+                print
+            }
+        ' "$invalid_path/evidence-ledger.md" \
+            >"$invalid_path/evidence-ledger.md.tmp" &&
+            mv -- "$invalid_path/evidence-ledger.md.tmp" \
+                "$invalid_path/evidence-ledger.md"
+        expect_failure "unlinked public prior art" \
+            "unlinked prior art requires only internal, private, or restricted evidence" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-private-linked")
+        sed -i \
+            's#| Fictional private predecessor | None |#| Fictional private predecessor | [Reserved example](https://example.invalid/prior-art) |#' \
+            "$invalid_path/prior-art-summary.md"
+        expect_failure "linked private prior art" \
+            "linked prior art requires only public evidence" \
+            bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
+
+        internal_prior=$(copy_fixture "$test_root/prior-art/internal-unlinked")
+        awk '
+            $0 == "## PRV-20000101-001-E0002" {
+                active = 1
+            }
+            active && /^- Sensitivity: private$/ {
+                print "- Sensitivity: internal"
+                active = 0
+                next
+            }
+            {
+                print
+            }
+        ' "$internal_prior/evidence-ledger.md" \
+            >"$internal_prior/evidence-ledger.md.tmp" &&
+            mv -- "$internal_prior/evidence-ledger.md.tmp" \
+                "$internal_prior/evidence-ledger.md"
+        bash "$repository_root/scripts/validate-review.sh" "$internal_prior" ||
+            fail "unlinked internal prior art failed validation"
+
+        invalid_path=$(copy_fixture "$invalid_parent/prior-art-nonactive")
+        awk '
+            $0 == "## PRV-20000101-001-E0002" {
+                active = 1
+            }
+            active && /^- Status: active$/ {
+                print "- Status: withdrawn"
+                active = 0
+                next
+            }
+            {
+                print
+            }
+        ' "$invalid_path/evidence-ledger.md" \
+            >"$invalid_path/evidence-ledger.md.tmp" &&
+            mv -- "$invalid_path/evidence-ledger.md.tmp" \
+                "$invalid_path/evidence-ledger.md"
+        expect_failure "current prior art uses non-active evidence" \
+            "references non-active evidence: PRV-20000101-001-E0002" \
             bash "$repository_root/scripts/validate-review.sh" "$invalid_path"
 
         invalid_path=$(copy_fixture "$invalid_parent/retained-hash")
@@ -665,11 +924,89 @@ if [[ $test_root == "$repository_root/.test-output/validate-agent" ]]; then
             bash "$repository_root/scripts/validate-review.sh" \
             --baseline "$invalid_path" "$current_path"
 
+        prior_baseline=$(copy_fixture "$test_root/prior-art/baseline")
+        prior_modified=$(copy_fixture "$test_root/prior-art/modified")
+        awk '
+            $0 == "## PRIOR-ART-ITERATION-001" {
+                active = 1
+            }
+            active && /^- Bottom line: / {
+                print "- Bottom line: Modified immutable prior-art history."
+                active = 0
+                next
+            }
+            {
+                print
+            }
+        ' "$prior_modified/prior-art-summary.md" \
+            >"$prior_modified/prior-art-summary.md.tmp" &&
+            mv -- "$prior_modified/prior-art-summary.md.tmp" \
+                "$prior_modified/prior-art-summary.md"
+        expect_failure "modified prior-art iteration" \
+            "append-only baseline record was modified: prior-art-summary.md PRIOR-ART-ITERATION-001" \
+            bash "$repository_root/scripts/validate-review.sh" \
+            --baseline "$prior_baseline" "$prior_modified"
+
+        prior_projection_changed=$(
+            copy_fixture "$test_root/prior-art/projection-without-iteration"
+        )
+        sed -i \
+            's/^- Bottom line: The fixture records only a fictional predecessor relationship.$/- Bottom line: Changed without a new iteration./' \
+            "$prior_projection_changed/prior-art-summary.md"
+        expect_failure "prior-art projection changed without iteration" \
+            "current projection or table changed without appending a new latest iteration" \
+            bash "$repository_root/scripts/validate-review.sh" \
+            --baseline "$prior_baseline" "$prior_projection_changed"
+
+        prior_table_changed=$(
+            copy_fixture "$test_root/prior-art/table-without-iteration"
+        )
+        sed -i \
+            's/Exercises valid unlinked private-source handling/Changed table without a new iteration/' \
+            "$prior_table_changed/prior-art-summary.md"
+        expect_failure "prior-art table changed without iteration" \
+            "current projection or table changed without appending a new latest iteration" \
+            bash "$repository_root/scripts/validate-review.sh" \
+            --baseline "$prior_baseline" "$prior_table_changed"
+
+        prior_removed=$(copy_fixture "$test_root/prior-art/removed")
+        sed -i '/^## PRIOR-ART-ITERATION-001$/,$d' \
+            "$prior_removed/prior-art-summary.md"
+        expect_failure "removed prior-art iteration" \
+            "append-only baseline record was removed: prior-art-summary.md PRIOR-ART-ITERATION-001" \
+            bash "$repository_root/scripts/validate-review.sh" \
+            --baseline "$prior_baseline" "$prior_removed"
+
+        prior_appended=$(copy_fixture "$test_root/prior-art/appended")
+        sed -i \
+            -e 's/^Latest iteration: `PRIOR-ART-ITERATION-001`$/Latest iteration: `PRIOR-ART-ITERATION-002`/' \
+            -e 's/^Latest updated: `2000-01-01`$/Latest updated: `2000-01-02`/' \
+            -e 's/^- Based on iteration: PRIOR-ART-ITERATION-001$/- Based on iteration: PRIOR-ART-ITERATION-002/' \
+            "$prior_appended/prior-art-summary.md"
+        append_prior_art_iteration "$prior_appended/prior-art-summary.md" \
+            PRIOR-ART-ITERATION-002 2000-01-02 PRIOR-ART-ITERATION-001
+        bash "$repository_root/scripts/validate-review.sh" \
+            --baseline "$prior_baseline" "$prior_appended" ||
+            fail "valid appended prior-art iteration failed"
+
+        legacy_prior_baseline=$(copy_fixture "$test_root/prior-art/legacy")
+        rm -- "$legacy_prior_baseline/prior-art-summary.md"
+        legacy_output=$(
+            bash "$repository_root/scripts/validate-review.sh" \
+                --baseline "$legacy_prior_baseline" "$fixture" 2>&1
+        ) || fail "legacy baseline without prior-art summary failed"
+        printf '%s\n' "$legacy_output" |
+            grep -Fq \
+                'baseline lacks prior-art-summary.md; skipping prior-art history comparison only.' ||
+            fail "legacy baseline compatibility did not emit its prior-art note"
+
         baseline_path=$(copy_fixture "$test_root/supersession/baseline")
         superseded_path=$(copy_fixture "$test_root/supersession/valid")
         append_superseding_evidence "$superseded_path/evidence-ledger.md"
         transition_evidence "$superseded_path/evidence-ledger.md" \
             PRV-20000101-001-E0002 superseded PRV-20000101-001-E0004
+        refresh_prior_art_after_supersession \
+            "$superseded_path/prior-art-summary.md"
         bash "$repository_root/scripts/validate-review.sh" \
             --baseline "$baseline_path" "$superseded_path" ||
             fail "valid append-only evidence supersession failed"
@@ -750,6 +1087,9 @@ if [[ $test_root == "$repository_root/.test-output/validate-agent" ]]; then
                 -e 's/^- Redistribution status: not-approved$/- Redistribution status: approved/' \
                 -e 's/^- Licence: unknown$/- Licence: not-applicable/' \
                 {} +
+        sed -i \
+            's#| Fictional private predecessor | None |#| Fictional private predecessor | [Reserved example](https://example.invalid/prior-art) |#' \
+            "$public_good/prior-art-summary.md"
         bash "$repository_root/scripts/validate-review.sh" "$public_good" ||
             fail "safe public-candidate package failed validation"
 

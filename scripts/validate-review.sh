@@ -7,6 +7,19 @@ usage() {
         "${0##*/}" >&2
 }
 
+evidence_references_are_public() {
+    local value=$1
+    local reference
+    local -a references
+
+    IFS=',' read -r -a references <<<"$value"
+    ((${#references[@]} > 0)) || return 1
+    for reference in "${references[@]}"; do
+        reference=$(trim_value "$reference")
+        [[ ${evidence_sensitivity[$reference]:-} == public ]] || return 1
+    done
+}
+
 failures=0
 validation_mode=completion
 baseline_spec=
@@ -77,6 +90,7 @@ fi
 
 required_files=(
     scope.md
+    prior-art-summary.md
     report.md
     aspect-map.md
     chronology.md
@@ -119,6 +133,7 @@ distribution=$(metadata_value "$scope_file" Distribution)
 intended_distribution=$(metadata_value "$scope_file" "Intended distribution")
 package_status=$(metadata_value "$scope_file" Status)
 absolute_path_pattern='(^|[[:space:]`"'"'"'=<(])/[A-Za-z0-9._-]|file:/+'
+canonical_https_link_pattern='^\[[^]]+\]\(https://[^)]+\)$'
 
 case $distribution in
     private | internal | public-candidate) ;;
@@ -216,7 +231,28 @@ trim_value() {
     printf '%s' "$value"
 }
 
-declare -A evidence_set aspect_set chronology_set
+valid_iso_date() {
+    local value=$1
+    [[ $value =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || return 1
+    [[ $(date -u -d "$value" +%F 2>/dev/null) == "$value" ]]
+}
+
+valid_classification() {
+    case $1 in
+        "verified source lineage"|\
+        "documented influence"|\
+        "strong prior-art relationship"|\
+        "adjacent precedent"|\
+        "independent convergence"|\
+        unresolved)
+            return 0
+            ;;
+    esac
+    return 1
+}
+
+declare -A evidence_set evidence_sensitivity evidence_status_map \
+    aspect_set chronology_set
 mapfile -t evidence_ids < <(
     grep -E '^## PRV-[0-9]{8}-[0-9]{3}-E[0-9]{4}$' \
         "$review_abs/evidence-ledger.md" | sed 's/^## //'
@@ -458,6 +494,8 @@ for evidence_id in "${evidence_ids[@]}"; do
     superseded_by=$(trim_value "$(field_value "$block" "Superseded by")")
     administrative=$(trim_value "$(field_value "$block" Administrative)")
     logical_locator=$(field_value "$block" "Logical locator")
+    evidence_sensitivity[$evidence_id]=$sensitivity
+    evidence_status_map[$evidence_id]=$evidence_status
 
     case $evidence_status in active | superseded | withdrawn) ;; *)
         fail "evidence-ledger.md $evidence_id has invalid Status: $evidence_status"
@@ -547,6 +585,36 @@ for evidence_id in "${evidence_ids[@]}"; do
                 fail "evidence-ledger.md $evidence_id cannot link $link_name to itself"
         fi
     done
+
+    require_active_evidence_references() {
+        local value=$1
+        local context=$2
+        local reference
+        local -a references
+
+        IFS=',' read -r -a references <<<"$value"
+        for reference in "${references[@]}"; do
+            reference=$(trim_value "$reference")
+            [[ ${evidence_status_map[$reference]:-} == active ]] ||
+                fail "$context references non-active evidence: $reference"
+        done
+    }
+
+    evidence_references_are_nonpublic() {
+        local value=$1
+        local reference
+        local -a references
+
+        IFS=',' read -r -a references <<<"$value"
+        ((${#references[@]} > 0)) || return 1
+        for reference in "${references[@]}"; do
+            reference=$(trim_value "$reference")
+            case ${evidence_sensitivity[$reference]:-} in
+                internal | private | restricted) ;;
+                *) return 1 ;;
+            esac
+        done
+    }
     if [[ $evidence_status == active && $superseded_by != None ]]; then
         fail "active evidence $evidence_id cannot have a Superseded by link"
     fi
@@ -638,6 +706,218 @@ for chronology_id in "${chronology_ids[@]}"; do
         fail "chronology.md $chronology_id has invalid Confidence: $confidence"
     esac
 done
+
+prior_art_file=$review_abs/prior-art-summary.md
+for metadata_field in "Latest iteration" "Latest updated"; do
+    metadata_count=$(grep -Ec "^${metadata_field}:" "$prior_art_file" || true)
+    ((metadata_count == 1)) ||
+        fail "prior-art-summary.md must contain exactly one '$metadata_field' field"
+done
+latest_iteration=$(metadata_value "$prior_art_file" "Latest iteration")
+latest_updated=$(metadata_value "$prior_art_file" "Latest updated")
+current_projection=$(record_block \
+    "$prior_art_file" "Current at-a-glance projection")
+current_fields=(
+    "Based on iteration"
+    "Bottom line"
+    "Implementation lineage"
+    "Documented influence"
+    "Distinct or unresolved"
+    "Credit framing"
+    "Aspect IDs"
+    "Evidence IDs"
+    "Chronology IDs"
+    Confidence
+    "Evidence basis"
+    "Alternatives/counter-evidence"
+    Limitations
+    Administrative
+)
+require_fields "$prior_art_file" "Current at-a-glance projection" \
+    "${current_fields[@]}"
+require_references "$(field_value "$current_projection" "Aspect IDs")" aspect \
+    "prior-art-summary.md current projection Aspect IDs"
+require_references "$(field_value "$current_projection" "Evidence IDs")" evidence \
+    "prior-art-summary.md current projection Evidence IDs"
+require_active_evidence_references \
+    "$(field_value "$current_projection" "Evidence IDs")" \
+    "prior-art-summary.md current projection"
+require_references "$(field_value "$current_projection" "Chronology IDs")" \
+    chronology "prior-art-summary.md current projection Chronology IDs"
+current_confidence=$(trim_value \
+    "$(field_value "$current_projection" Confidence)")
+case $current_confidence in High | Medium | Low) ;; *)
+    fail "prior-art-summary.md current projection has invalid Confidence: $current_confidence"
+esac
+current_administrative=$(trim_value \
+    "$(field_value "$current_projection" Administrative)")
+case $current_administrative in yes | no) ;; *)
+    fail "prior-art-summary.md current projection has invalid Administrative value: $current_administrative"
+esac
+
+mapfile -t prior_art_iteration_ids < <(
+    grep -E '^## PRIOR-ART-ITERATION-[0-9]{3}$' "$prior_art_file" |
+        sed 's/^## //'
+)
+check_duplicates "prior-art-summary.md" "${prior_art_iteration_ids[@]}"
+
+prior_art_iteration_fields=(
+    Date
+    Supersedes
+    "Change reason"
+    "Bottom line"
+    "Implementation lineage"
+    "Documented influence"
+    "Distinct or unresolved"
+    "Credit framing"
+    "Aspect IDs"
+    "Evidence IDs"
+    "Chronology IDs"
+    Confidence
+    "Evidence basis"
+    "Alternatives/counter-evidence"
+    Limitations
+    Administrative
+)
+previous_iteration=None
+highest_iteration=None
+highest_iteration_date=
+highest_iteration_administrative=
+highest_iteration_evidence=
+expected_iteration_number=1
+for iteration_id in "${prior_art_iteration_ids[@]}"; do
+    printf -v expected_iteration 'PRIOR-ART-ITERATION-%03d' \
+        "$expected_iteration_number"
+    [[ $iteration_id == "$expected_iteration" ]] ||
+        fail "prior-art-summary.md iteration IDs must be contiguous from PRIOR-ART-ITERATION-001; expected $expected_iteration, found $iteration_id"
+    require_fields "$prior_art_file" "$iteration_id" \
+        "${prior_art_iteration_fields[@]}"
+    iteration_block=$(record_block "$prior_art_file" "$iteration_id")
+    iteration_date=$(trim_value "$(field_value "$iteration_block" Date)")
+    valid_iso_date "$iteration_date" ||
+        fail "prior-art-summary.md $iteration_id has invalid Date: $iteration_date"
+    iteration_supersedes=$(trim_value \
+        "$(field_value "$iteration_block" Supersedes)")
+    [[ $iteration_supersedes == "$previous_iteration" ]] ||
+        fail "prior-art-summary.md $iteration_id must supersede $previous_iteration"
+    require_references "$(field_value "$iteration_block" "Aspect IDs")" aspect \
+        "prior-art-summary.md $iteration_id Aspect IDs"
+    require_references "$(field_value "$iteration_block" "Evidence IDs")" evidence \
+        "prior-art-summary.md $iteration_id Evidence IDs"
+    require_references "$(field_value "$iteration_block" "Chronology IDs")" \
+        chronology "prior-art-summary.md $iteration_id Chronology IDs"
+    iteration_confidence=$(trim_value \
+        "$(field_value "$iteration_block" Confidence)")
+    case $iteration_confidence in High | Medium | Low) ;; *)
+        fail "prior-art-summary.md $iteration_id has invalid Confidence: $iteration_confidence"
+    esac
+    iteration_administrative=$(trim_value \
+        "$(field_value "$iteration_block" Administrative)")
+    case $iteration_administrative in yes | no) ;; *)
+        fail "prior-art-summary.md $iteration_id has invalid Administrative value: $iteration_administrative"
+    esac
+    previous_iteration=$iteration_id
+    highest_iteration=$iteration_id
+    highest_iteration_date=$iteration_date
+    highest_iteration_administrative=$iteration_administrative
+    highest_iteration_evidence=$(field_value "$iteration_block" "Evidence IDs")
+    expected_iteration_number=$((expected_iteration_number + 1))
+done
+
+valid_iso_date "$latest_updated" ||
+    fail "prior-art-summary.md has invalid Latest updated date: $latest_updated"
+current_based_on=$(trim_value \
+    "$(field_value "$current_projection" "Based on iteration")")
+if ((${#prior_art_iteration_ids[@]} == 0)); then
+    [[ $latest_iteration == None ]] ||
+        fail "prior-art-summary.md Latest iteration must be None when no numbered iteration exists"
+    [[ $current_based_on == None ]] ||
+        fail "prior-art-summary.md current projection must be based on None when no numbered iteration exists"
+else
+    [[ $latest_iteration == "$highest_iteration" ]] ||
+        fail "prior-art-summary.md Latest iteration must identify highest iteration $highest_iteration"
+    [[ $latest_updated == "$highest_iteration_date" ]] ||
+        fail "prior-art-summary.md Latest updated must equal $highest_iteration Date $highest_iteration_date"
+    [[ $current_based_on == "$highest_iteration" ]] ||
+        fail "prior-art-summary.md current projection Based on iteration must equal $highest_iteration"
+fi
+
+if [[ $validation_mode == draft &&
+    ${#prior_art_iteration_ids[@]} == 0 ]]; then
+    [[ $current_administrative == yes ]] ||
+        fail "draft prior-art-summary.md without an iteration requires an administrative current projection"
+fi
+
+if [[ $validation_mode == completion ]]; then
+    ((${#prior_art_iteration_ids[@]} > 0)) ||
+        fail "completion requires at least one PRIOR-ART-ITERATION-NNN record"
+    [[ $highest_iteration_administrative == no ]] ||
+        fail "completion requires the latest prior-art iteration to have Administrative: no"
+    [[ $current_administrative == no ]] ||
+        fail "completion requires the current prior-art projection to have Administrative: no"
+    require_active_evidence_references "$highest_iteration_evidence" \
+        "prior-art-summary.md $highest_iteration"
+
+    mapfile -t prior_art_rows < <(
+        awk '
+            $0 == "## Significant prior art" {
+                active = 1
+                next
+            }
+            active && /^## / {
+                exit
+            }
+            active && /^\|/ {
+                table_line++
+                if (table_line > 2) {
+                    print
+                }
+            }
+        ' "$prior_art_file"
+    )
+    ((${#prior_art_rows[@]} > 0)) ||
+        fail "completed prior-art-summary.md requires significant-prior-art table rows"
+    for prior_art_row in "${prior_art_rows[@]}"; do
+        row=${prior_art_row#|}
+        row=${row%|}
+        IFS='|' read -r prior_work prior_link prior_date prior_classification \
+            prior_why prior_aspects prior_evidence prior_chronology \
+            prior_confidence prior_extra <<<"$row"
+        prior_work=$(trim_value "$prior_work")
+        prior_link=$(trim_value "$prior_link")
+        prior_date=$(trim_value "$prior_date")
+        prior_classification=$(trim_value "$prior_classification")
+        prior_why=$(trim_value "$prior_why")
+        prior_confidence=$(trim_value "$prior_confidence")
+        prior_extra=$(trim_value "${prior_extra:-}")
+        [[ -n $prior_work && -n $prior_date && -n $prior_why ]] ||
+            fail "prior-art-summary.md contains an incomplete significant-prior-art row"
+        [[ -z $prior_extra ]] ||
+            fail "prior-art-summary.md significant-prior-art row has unexpected columns: $prior_work"
+        if [[ $prior_link == None ]]; then
+            evidence_references_are_nonpublic "$prior_evidence" ||
+                fail "prior-art-summary.md unlinked prior art requires only internal, private, or restricted evidence: $prior_work"
+        elif [[ $prior_link =~ $canonical_https_link_pattern ]]; then
+            evidence_references_are_public "$prior_evidence" ||
+                fail "prior-art-summary.md linked prior art requires only public evidence: $prior_work"
+        else
+            fail "prior-art-summary.md significant prior art requires a canonical HTTPS Markdown link or None for private/restricted evidence: $prior_work"
+        fi
+        valid_classification "$prior_classification" ||
+            fail "prior-art-summary.md has invalid Relationship/classification: $prior_classification"
+        require_references "$prior_aspects" aspect \
+            "prior-art-summary.md table row '$prior_work' Aspect IDs"
+        require_references "$prior_evidence" evidence \
+            "prior-art-summary.md table row '$prior_work' Evidence IDs"
+        require_active_evidence_references "$prior_evidence" \
+            "prior-art-summary.md table row '$prior_work'"
+        require_references "$prior_chronology" chronology \
+            "prior-art-summary.md table row '$prior_work' Chronology IDs"
+        case $prior_confidence in High | Medium | Low) ;; *)
+            fail "prior-art-summary.md table row '$prior_work' has invalid Confidence: $prior_confidence"
+        esac
+    done
+fi
 
 validate_record_file() {
     local file_name=$1
@@ -1033,13 +1313,17 @@ export_git_baseline() {
         "$repository_root/.test-output/validate-review-baseline.XXXXXX") ||
         return 1
     for file_name in "${required_files[@]}"; do
-        git -C "$repository_root" show \
+        if git -C "$repository_root" show \
             "$ref:$review_relative/$file_name" \
-            >"$temporary_baseline/$file_name" 2>/dev/null ||
-            {
-                fail "baseline ref lacks $review_relative/$file_name"
-                return 1
-            }
+            >"$temporary_baseline/$file_name" 2>/dev/null; then
+            continue
+        fi
+        rm -f -- "$temporary_baseline/$file_name"
+        if [[ $file_name == prior-art-summary.md ]]; then
+            continue
+        fi
+        fail "baseline ref lacks $review_relative/$file_name"
+        return 1
     done
     baseline_dir=$temporary_baseline
 }
@@ -1134,6 +1418,38 @@ if [[ -n $baseline_spec ]]; then
         compare_record_file "$baseline_dir" report.md 'OBS-[0-9]{3}'
         compare_record_file "$baseline_dir" attribution.md \
             'ATTRIBUTION-[0-9]{3}'
+        if [[ -f $baseline_dir/prior-art-summary.md ]]; then
+            compare_record_file "$baseline_dir" prior-art-summary.md \
+                'PRIOR-ART-ITERATION-[0-9]{3}'
+            baseline_prior_latest=$(metadata_value \
+                "$baseline_dir/prior-art-summary.md" "Latest iteration")
+            current_prior_latest=$(metadata_value \
+                "$prior_art_file" "Latest iteration")
+            if [[ $baseline_prior_latest == "$current_prior_latest" ]]; then
+                baseline_prior_projection=$(awk '
+                    /^## PRIOR-ART-ITERATION-[0-9]{3}$/ {
+                        exit
+                    }
+                    {
+                        print
+                    }
+                ' "$baseline_dir/prior-art-summary.md")
+                current_prior_projection=$(awk '
+                    /^## PRIOR-ART-ITERATION-[0-9]{3}$/ {
+                        exit
+                    }
+                    {
+                        print
+                    }
+                ' "$prior_art_file")
+                [[ $baseline_prior_projection == "$current_prior_projection" ]] ||
+                    fail "prior-art-summary.md current projection or table changed without appending a new latest iteration"
+            fi
+        else
+            printf '%s\n' \
+                'validate-review: NOTE: baseline lacks prior-art-summary.md; skipping prior-art history comparison only.' \
+                >&2
+        fi
         while IFS= read -r activity_line; do
             [[ -z $activity_line ]] && continue
             grep -Fqx -- "$activity_line" "$scope_file" ||

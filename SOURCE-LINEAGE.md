@@ -52,3 +52,13 @@ The workflow also adapts established local patterns:
 
 These repositories remain read-only inputs. This file records methodological
 lineage; it does not transfer ownership, licences, or publication authority.
+
+## Human-readable prior-art projection
+
+The local workflow adds a repository-specific, versioned
+`prior-art-summary.md` contract. Its mutable latest projection and canonical
+public-link table are derived only from admitted evidence and chronology or
+search records, while numbered `PRIOR-ART-ITERATION-NNN` blocks preserve
+append-only changes in human-facing lineage framing. This presentation
+contract is local workflow design; it does not add or reclassify research
+evidence by itself.

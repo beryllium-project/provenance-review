@@ -79,6 +79,7 @@ Use stable review IDs `PRV-YYYYMMDD-NNN`. A review package must contain:
 
 ```text
 scope.md
+prior-art-summary.md
 report.md
 aspect-map.md
 chronology.md
@@ -89,6 +90,15 @@ inaccessible-resources.md
 publication-checklist.md
 HANDOFF.md
 ```
+
+`prior-art-summary.md` is the required human-readable lineage entry point.
+Its mutable current projection and significant-prior-art table identify the
+latest numbered `PRIOR-ART-ITERATION-NNN`; numbered iteration records are
+append-only and byte-stable once committed. Material source or background
+changes require a complete next iteration, updated latest metadata and current
+projection, canonical public links where available, and existing
+evidence-ledger plus chronology/search support. Public links are navigation,
+not evidence substitutes; private and restricted sources remain unlinked.
 
 Activity and evidence history are append-only. Corrections add new evidence or
 activity; they do not erase the earlier record.

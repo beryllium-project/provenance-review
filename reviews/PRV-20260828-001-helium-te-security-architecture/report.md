@@ -459,3 +459,14 @@ CHRON-035, CHRON-039.
 - Evidence basis: Forty-six exact compliant archive-specific queries and primary archive records.
 - Alternatives/counter-evidence: Missing original SELinux, FreeBSD, pKVM, `cap-talk`, seL4, and CHERI discussions may contain additional chronology or rationale.
 - Limitations: Archive null results are bounded and do not prove absence.
+
+## OBS-034
+
+- Observation: Current active evidence supports divergence or incomplete reconciliation for pKVM and Xen, but not for Logical Domains.
+- Aspect IDs: ASPECT-003
+- Evidence IDs: PRV-20260828-001-E0115, PRV-20260828-001-E0118, PRV-20260828-001-E0120, PRV-20260828-001-E0124
+- Chronology IDs: CHRON-043, CHRON-044, CHRON-045, CHRON-046
+- Confidence: High
+- Evidence basis: Immutable pKVM documentation records possible VMM or guest mapping incoherency and unavailable DMA isolation; a Xen report records divergence between permission and realized mapping; Petroni provides only asynchronous live-AVC monitoring.
+- Alternatives/counter-evidence: Lower-level sun4v, pKVM, Xen, or other implementation records may show stronger transition-time checks.
+- Limitations: E0100 establishes Logical Domains resource assignment but lacks continuous-reconciliation detail, so it does not support the divergence claim in historical OBS-026.

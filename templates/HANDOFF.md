@@ -29,6 +29,7 @@ bash scripts/validate-review.sh --draft reviews/@@REVIEW_ID@@-@@SHORT_NAME@@
 ## Continuation paths
 
 - Scope: `scope.md`
+- Prior-art summary: `prior-art-summary.md` (`Latest iteration: None`)
 - Report: `report.md`
 - Evidence ledger: `evidence-ledger.md`
 - Search record: `search-log.md`

@@ -123,6 +123,13 @@ Return a structured result containing:
   redistribution status, confidence, and limitations;
 - hypotheses supported or weakened;
 - attribution candidates;
+- proposed significant-prior-art table rows with exact title, canonical public
+  hyperlink when available, date/version, provisional relationship
+  classification, why the source matters, aspect IDs, evidence-candidate
+  references, chronology references, confidence, alternatives, and
+  limitations;
+- a concise proposed `Documented influence`, `Distinct or unresolved`, and
+  `Credit framing` projection for `prior-art-summary.md`;
 - inaccessible-resource register;
 - coverage gaps and highest-value next retrievals.
 
@@ -140,4 +147,7 @@ or `restricted`. Redistribution is `approved`, `not-approved`, `unknown`, or
 `workspace://...`, `target://...`, `source://public/...`,
 `source://quarantine/...`, `inbox://...`, or package-relative paths. A public
 URL may be returned as bibliographic metadata, but never return an absolute
-workstation path.
+workstation path. Public links are navigation only and never replace evidence
+records. Do not propose a source for the prior-art summary without matching
+evidence-ledger and chronology or search material, and leave private or
+restricted sources unlinked.

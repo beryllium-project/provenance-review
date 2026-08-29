@@ -47,7 +47,27 @@ public-research permission; and Deep provenance is mandatory at `Deep` depth.
 
 Evidence uses review-scoped stable IDs and records sensitivity separately from
 package distribution. Evidence, chronology, search, inaccessible-resource,
-report, attribution, and activity records are intended to be append-only.
+report, attribution, numbered prior-art iterations, and activity records are
+intended to be append-only.
 Structural validation cannot prove historical integrity by itself. Use
 `--baseline <prior-directory-or-git-ref>` or inspect Git history when validating
 an updated package.
+
+Every package requires `prior-art-summary.md`. A draft scaffold has
+`Latest iteration: None` and an administrative current projection. A completed
+review has one or more contiguous `PRIOR-ART-ITERATION-NNN` records, an
+unmistakable latest pointer and date, and a current projection plus
+significant-prior-art table based on that latest iteration. Material changes
+append a complete iteration; committed numbered records are never edited.
+Canonical public hyperlinks are navigation only, and every summarized source
+must already have evidence-ledger and chronology or search support.
+
+Supplementary local-browser HTML can be generated and checked without changing
+the normative Markdown. Navigation begins with `HANDOFF.md`, then the latest
+`prior-art-summary.md`, then `source-scope-summary.md` when present:
+
+```sh
+python3 ./scripts/render-review.py reviews/PRV-20260828-001-helium-te-security-architecture
+python3 ./scripts/render-review.py --check reviews/PRV-20260828-001-helium-te-security-architecture
+firefox reviews/PRV-20260828-001-helium-te-security-architecture/html/index.html
+```

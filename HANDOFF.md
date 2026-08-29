@@ -6,7 +6,8 @@ This repository is the independent Beryllium provenance and attribution
 workspace. It contains a project-local Copilot orchestrator, write-disabled
 code-lineage and research specialists, durable `PRV-*` review artifacts,
 classified source storage, hardened read-only Git capture, and contract
-validation.
+validation. Each review now requires a versioned `prior-art-summary.md` as its
+human-readable lineage entry point.
 
 ## Boundaries
 
@@ -29,6 +30,8 @@ validation.
 - Implementation: complete and validated
 - Publication status: private, not approved for release
 - Validation: `bash ./tests/validate-agent.sh` and `git diff --check` pass
+- Prior-art contract: required for new and current reviews; numbered
+  iterations are append-only and the latest projection is explicit
 - Known limitation: exact dirty-tree capture assumes the target remains stable
   during the short capture sequence and is rechecked afterward
 

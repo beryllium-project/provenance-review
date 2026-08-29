@@ -12,7 +12,11 @@ Status: `Complete`
 The private amendment is complete and validated for Helium `for-review` commit
 `1ab289c066b69acdd8b55c9f77055b0145be1316` under confirmed scope evidence
 PRV-20260828-001-E0042. The committed baseline at `684d9bf` remains the
-append-only comparison point. All independent audit findings are resolved.
+historical amendment comparison point; current baseline validation uses
+`20bc43ef8131ccfc23d4cc3c7f135ead7f77f251`. All independent audit findings
+are resolved.
+The human-readable prior-art entry point is `prior-art-summary.md`, latest
+`PRIOR-ART-ITERATION-001` dated 2026-08-29.
 
 The strongest amended relationships are:
 
@@ -90,18 +94,26 @@ output are complete.
 - `git --no-pager diff --check` - PASS on 2026-08-28.
 - Evidence ID: PRV-20260828-001-E0126.
 - The committed baseline at `684d9bf1fcb4030f5d3ace69b2364d431805db14`
-  is available for append-only baseline comparison.
+  remains the historical amendment comparison point.
+- `bash ./scripts/validate-review.sh --baseline 20bc43ef8131ccfc23d4cc3c7f135ead7f77f251 reviews/PRV-20260828-001-helium-te-security-architecture` - PASS in completion mode on 2026-08-29; the validator noted that the older baseline predates `prior-art-summary.md` and skipped only that history comparison.
+- `python3 ./scripts/render-review.py --check reviews/PRV-20260828-001-helium-te-security-architecture` - PASS on 2026-08-29.
+- `python3 -m unittest tests/test-render-review.py` - PASS on 2026-08-29.
+- `bash ./tests/validate-agent.sh` - PASS on 2026-08-29.
+- `git --no-pager diff --check` - PASS on 2026-08-29.
+- Evidence ID: PRV-20260828-001-E0127.
 
 ## Exact next action
 
-A responsible human should review `source-scope-summary.md`, `report.md`,
-`attribution.md`, and `publication-checklist.md`. Keep the package private
-unless every uncleared dependency is resolved and the responsible human
-personally records a valid promotion.
+A responsible human should review `prior-art-summary.md` first, followed by
+`source-scope-summary.md`, `report.md`, `attribution.md`, and
+`publication-checklist.md`. Keep the package private unless every uncleared
+dependency is resolved and the responsible human personally records a valid
+promotion.
 
 ## Continuation paths
 
 - Scope: `scope.md`
+- Prior-art summary and latest iteration: `prior-art-summary.md`
 - Report: `report.md`
 - Aspect map: `aspect-map.md`
 - Chronology: `chronology.md`

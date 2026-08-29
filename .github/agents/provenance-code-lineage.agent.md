@@ -101,7 +101,10 @@ Return a concise structured result containing:
 - counter-evidence and alternative explanations;
 - missing history, inaccessible internal references, or unresolved questions;
 - clear separation of implementation authorship from conceptual-origin
-  claims.
+  claims;
+- a concise proposed `Implementation lineage`, `Distinct or unresolved`, and
+  `Credit framing` projection for `prior-art-summary.md`, with exact aspect,
+  evidence-candidate, and chronology references and explicit counter-evidence.
 
 Use provisional labels only; the orchestrator owns stable
 `PRV-YYYYMMDD-NNN-E####` allocation and final conclusions. Attach
@@ -115,3 +118,6 @@ Use only portable locators suitable for tracked artifacts:
 return an absolute workstation path. Treat package distribution separately
 from evidence sensitivity (`public`, `internal`, `private`, `restricted`) and
 redistribution (`approved`, `not-approved`, `unknown`, `not-applicable`).
+Do not supply public hyperlinks for internal, private, or restricted sources. The
+orchestrator owns the versioned prior-art iteration and must reconcile this
+specialist return with admitted evidence before publication in the summary.

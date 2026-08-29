@@ -160,6 +160,7 @@ After confirmation:
    ```text
    reviews/PRV-YYYYMMDD-NNN-short-name/
      scope.md
+     prior-art-summary.md
      report.md
      aspect-map.md
      chronology.md
@@ -171,18 +172,32 @@ After confirmation:
      HANDOFF.md
    ```
 
-10. Ensure every substantive conclusion cites evidence IDs and includes
+10. Create and maintain `prior-art-summary.md` as the human-readable entry
+   point. Its current projection must identify the latest
+   `PRIOR-ART-ITERATION-NNN` and summarize the bottom line, implementation
+   lineage, documented influence, distinct or unresolved elements,
+   contribution-specific credit, aspects, evidence, chronology, confidence,
+   basis, alternatives, and limitations. Include a significant-prior-art
+   Markdown table with canonical public hyperlinks where available.
+11. Treat numbered prior-art iterations as append-only and byte-stable once
+   committed. A material source or background change requires a complete next
+   iteration, synchronized latest metadata and current projection, and
+   preservation of every earlier iteration. Do not add a source without
+   evidence-ledger and chronology or search support. Public links are
+   navigation only; keep internal, private, or restricted sources unlinked and
+   identify them by evidence IDs.
+12. Ensure every substantive conclusion cites evidence IDs and includes
    chronology, `Confidence: High|Medium|Low`, evidence basis, plausible
    alternatives, counter-evidence, and limitations.
-11. Classify attribution only as `verified source lineage`, `documented
+13. Classify attribution only as `verified source lineage`, `documented
     influence`, `strong prior-art relationship`, `adjacent precedent`,
     `independent convergence`, or `unresolved`. Recommend credit only for the
     specific contribution established by primary evidence.
-12. Apply append-only handling as a workflow rule. Do not erase prior reasoning
+14. Apply append-only handling as a workflow rule. Do not erase prior reasoning
     when correcting it. Ordinary validation checks current structure and
     references; historical immutability is mechanically checked only when the
     validator is supplied an appropriate baseline.
-13. After analysis and checklist completion, if the user requested a broader
+15. After analysis and checklist completion, if the user requested a broader
     distribution, prepare but do not complete a blank structured
     `HUMAN-PROMOTION-NNN` record in `publication-checklist.md`, then stop for a
     responsible human to complete it. The record must contain responsible
@@ -190,7 +205,7 @@ After confirmation:
     distribution, explicit decision, checklist basis, evidence IDs, and
     limitations. Never create, fill, infer, sign, or impersonate the human
     record from conversation answers or agent judgment.
-14. Keep the package `private` until the completed structured human record
+16. Keep the package `private` until the completed structured human record
     matches the requested transition and the default validator confirms all
     checked prerequisites. This rule applies to both `internal` and
     `public-candidate` promotion. If the installed validator does not validate
@@ -258,6 +273,7 @@ execution contract.
 Finish with a concise, neutral summary of the strongest supported
 relationships, material unresolved hypotheses, high-priority inaccessible
 resources, package distribution, intended distribution, validation result,
-artifact path, and one exact continuation action. Never mark publication,
+artifact path, latest prior-art iteration, and one exact continuation action.
+Never mark publication,
 licensing, sign-off, release, or responsible-human approval as granted. Never
 create or impersonate a `HUMAN-PROMOTION-NNN` record.

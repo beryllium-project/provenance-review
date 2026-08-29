@@ -6,9 +6,10 @@ and implementation strategies.
 
 The agent maps a selected aspect to exact code and history, searches approved
 local Beryllium research and current public primary sources, tests competing
-lineage hypotheses, and preserves a durable evidence package. Its purpose is to
-help a human understand origins, find related work, identify evidence gaps, and
-credit specific contributions at the level supported by evidence.
+lineage hypotheses, and preserves a durable evidence package. Every package
+includes a versioned `prior-art-summary.md` so a human can see significant
+prior art, implementation lineage, documented influence, unresolved elements,
+and contribution-specific credit framing at a glance.
 
 ## Safety and claim boundary
 
@@ -53,9 +54,31 @@ scripts/              deterministic review scaffolding and validation
 tests/                repository contract checks and synthetic fixtures
 ```
 
+Numbered `PRIOR-ART-ITERATION-NNN` records are append-only. The summary's
+current projection and canonical-link table may be updated only by appending a
+complete next iteration and moving the explicit latest pointer. Public links
+aid navigation but do not replace evidence-ledger and chronology/search
+records.
+
 Read [RESEARCH-SOURCES.md](RESEARCH-SOURCES.md) before consuming sibling
 research and [SOURCE-LINEAGE.md](SOURCE-LINEAGE.md) before changing the
 provenance method.
+
+## Local HTML review site
+
+Markdown remains normative. Generate or check the supplementary dependency-free
+site with:
+
+```sh
+python3 ./scripts/render-review.py reviews/PRV-20260828-001-helium-te-security-architecture
+python3 ./scripts/render-review.py --check reviews/PRV-20260828-001-helium-te-security-architecture
+```
+
+Open it locally with:
+
+```sh
+firefox reviews/PRV-20260828-001-helium-te-security-architecture/html/index.html
+```
 
 ## Validation
 

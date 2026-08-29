@@ -3436,7 +3436,7 @@ does not mechanically guarantee it.
 
 ## PRV-20260828-001-E0126
 
-- Status: active
+- Status: superseded
 - Aspect IDs: ASPECT-001, ASPECT-002, ASPECT-003
 - Source type: review metadata
 - Evidentiary role: administrative record
@@ -3458,5 +3458,32 @@ does not mechanically guarantee it.
 - Licence: not-applicable
 - Hash: not-applicable
 - Supersedes: PRV-20260828-001-E0125
+- Superseded by: PRV-20260828-001-E0127
+- Administrative: yes
+
+## PRV-20260828-001-E0127
+
+- Status: active
+- Aspect IDs: ASPECT-001, ASPECT-002, ASPECT-003
+- Source type: review metadata
+- Evidentiary role: administrative record
+- Title/description: Created the versioned human-readable prior-art summary contract, validated supplementary rendering, and updated the current private publication blocker inventory through E0127.
+- Canonical locator: prior-art summary iteration and rendered review navigation
+- Logical locator: `prior-art-summary.md`
+- Commit/version/date: PRIOR-ART-ITERATION-001; 2026-08-29
+- Checked date: 2026-08-29
+- Precise location: prior-art-summary.md current projection, significant-prior-art table, and PRIOR-ART-ITERATION-001; html/prior-art-summary.html
+- Relationship: Records creation of the required current prior-art projection, append-only iteration history, canonical-link table, and supplementary HTML page using existing admitted evidence and classifications, and supersedes the previous validation/publication-inventory record.
+- Source ownership: project-controlled
+- Independence: not-independent
+- Confidence: High
+- Evidence basis: The summary references only existing active evidence-ledger and chronology records, maintained validator and renderer checks cover its structure and generated page, and the publication checklist identifies blockers through E0127.
+- Alternatives/counter-evidence: This administrative record does not strengthen or reclassify any substantive provenance relationship.
+- Limitations: Validation does not establish source truth, novelty, publication approval, or conceptual origin.
+- Sensitivity: private
+- Redistribution status: not-applicable
+- Licence: not-applicable
+- Hash: not-applicable
+- Supersedes: PRV-20260828-001-E0126
 - Superseded by: None
 - Administrative: yes

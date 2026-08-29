@@ -145,6 +145,7 @@ shopt -u nullglob
 
 required_templates=(
     scope.md
+    prior-art-summary.md
     report.md
     aspect-map.md
     chronology.md

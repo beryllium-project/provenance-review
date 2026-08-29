@@ -38,11 +38,11 @@ supersedes its completeness claim without modifying the historical record.
 
 ## Amendment publication correction
 
-Evidence: PRV-20260828-001-E0126.
+Evidence: PRV-20260828-001-E0127.
 
 The package remains `private`. Promotion remains blocked. The complete current
 inventory is defined mechanically as **every evidence record E0001 through
-E0126 except the following cleared public records**:
+E0127 except the following cleared public records**:
 
 ```text
 E0023-E0026

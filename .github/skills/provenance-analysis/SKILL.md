@@ -488,6 +488,7 @@ Create exactly one package:
 ```text
 reviews/PRV-YYYYMMDD-NNN-short-name/
   scope.md
+  prior-art-summary.md
   report.md
   aspect-map.md
   chronology.md
@@ -503,6 +504,11 @@ Required content:
 
 - `scope.md`: confirmed effective scope, target-state descriptor, exclusions,
   chronology, depth, source permissions, distribution, and limitations.
+- `prior-art-summary.md`: the versioned human entry point for significant
+  prior art, implementation lineage, documented influence, distinct or
+  unresolved elements, and contribution-specific credit framing. It contains
+  a mutable current projection, a human-readable table with canonical public
+  hyperlinks, and append-only `PRIOR-ART-ITERATION-NNN` records.
 - `report.md`: evidence-led synthesis, hypotheses, counter-evidence,
   conclusions, confidence, limitations, and no unsupported allegations.
 - `aspect-map.md`: aspect IDs mapped to code, behavior, claims, dependencies,
@@ -520,7 +526,27 @@ Required content:
   checks, citation verification, licensing review, redaction, human review,
   and publication gates.
 - `HANDOFF.md`: restartable state, exact target and review IDs, completed work,
-  blockers, one specific next action, and exact relative artifact paths.
+  blockers, one specific next action, latest prior-art iteration, and exact
+  relative artifact paths.
+
+The prior-art summary begins with `Latest iteration: None` in a draft scaffold
+and an administrative current projection. Completion requires at least
+`PRIOR-ART-ITERATION-001`, with contiguous IDs, an exact supersession chain,
+the latest date and pointer synchronized to the numerically highest iteration,
+and `Administrative: no` on the latest record. Each complete iteration carries
+the bottom line, implementation lineage, documented influence, distinct or
+unresolved elements, credit framing, aspect/evidence/chronology references,
+confidence, evidence basis, alternatives or counter-evidence, and limitations.
+The current projection is mutable and must identify the latest iteration.
+
+Numbered prior-art iteration records are append-only and byte-stable once
+committed. Material source or background changes require a new complete
+iteration and updates to the latest metadata, current projection, and table;
+never rewrite an earlier numbered record. Do not add a source to the summary
+until corresponding evidence-ledger and chronology or search records exist.
+Use canonical public hyperlinks for significant public prior art. Links are
+navigation only, not evidence substitutes; private and restricted sources stay
+unlinked and use evidence IDs.
 
 Activity and evidence history follow an append-only workflow rule. Corrections
 add dated entries and stable superseding IDs rather than rewriting the
@@ -629,6 +655,8 @@ A review is complete only when:
   when applicable or carry the reasoned `Not applicable - <reason>` status
   permitted above;
 - every substantive conclusion cites stable evidence IDs;
+- `prior-art-summary.md` identifies the latest complete iteration and gives a
+  human-readable, evidence-linked view of significant prior art and lineage;
 - chronology, alternatives, counter-evidence, confidence, and limitations are
   present;
 - inaccessible resources and negative queries are preserved;
