@@ -163,3 +163,56 @@ influence on Helium or the source of Helium's exact algorithm. The Helium
 statement remains limited to the fixed proof of concept and its documented
 expected-fault paths; it does not establish dynamic-policy safety, formal
 verification, or hardware validation.
+
+## DOC-NOTE-20260907-004 — Stack resource labels and type meaning
+
+- **Added:** 2026-09-07
+- **Type:** FAQ draft
+- **Status:** Draft
+- **Audience:** users and documentation authors
+- **Sensitivity:** private
+- **Candidate destination:** Helium FAQ / policy model / architecture documentation
+
+### Question and draft answer
+
+**Does a separate TE type for the stack have any meaning in Helium, and why
+does the stack need a type at all?**
+
+In Helium's fixed profile, a distinct stack type would not create an
+observable security difference by itself. Each subject's stack and private
+data are separate resources at separate GPAs, but both use the same memory
+class and receive the same `open`, read, and write authority. Both are
+non-executable and absent from the other subject's G-stage root. A separate
+stack type with otherwise identical allow rules would therefore produce the
+same mappings, PTE permissions, and cross-subject denials while adding another
+label and additional policy, specification, test, evidence, and documentation
+rows.
+
+The stack nevertheless needs an object type because every TE-visible resource
+must have a complete valid label before the fixed label state can be sealed.
+Authorization and policy-derived G-stage construction use the subject type,
+object type, memory class, and requested permissions. An untyped stack is
+invalid and fails closed. Mapping it without a type would instead require a
+policy bypass or a stack-specific special case outside the TE model.
+
+Reusing `writer_t` and `reader_t` for each subject's stack and private data
+means "memory private to this subject." It does not model the semantic role of
+the page as a stack. A stack-specific type becomes meaningful only if policy
+needs to distinguish stack authority from private-data authority. That broader
+role-versus-authority question is retained as Helium-derived input for later
+Be analysis; it is not an adopted Be design or a Helium scope change.
+
+### Basis and limitations
+
+Portable implementation locators include
+`target://helium-te-poc/include/he/config.h`,
+`target://helium-te-poc/include/he/te.h`,
+`target://helium-te-poc/src/policy/te.c`, and
+`target://helium-te-poc/src/enforcement.c`. The initial Helium analysis is
+recorded under `POL-FIN-001` and `FB-FIN-007` in
+`target://helium-te-poc/docs/finalization-ledger.md`.
+
+This draft describes only the fixed one-class, two-subject, six-resource
+profile. It does not establish that a larger or dynamic system should merge or
+separate stack and private-data types, and it authorizes no policy or
+implementation change in Helium or Be.
