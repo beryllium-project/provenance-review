@@ -31,8 +31,8 @@ human-readable lineage entry point.
   the responsible human (`PMD-20261012-002`); every push to it publishes
 - Repository history: `origin/main` is `5238a90`, which holds the `PMR-144`
   and `PMR-122` work and return (pushed 2026-11-25 UTC; an anonymous read at
-  2026-11-25T01:23:26Z confirmed it); local `main` is 2 commits ahead with the
-  package-inventory return below and its human-judgment addendum, not pushed
+  2026-11-25T01:23:26Z confirmed it); local `main` is 3 commits ahead with the
+  package-inventory return below and its two addenda, not pushed
 - Implementation: complete and validated
 - Model: every agent profile pins `claude-opus-5.5`; reasoning effort `max`
   and context tier `long_context` are invocation defaults (`PMR-122`)
@@ -49,15 +49,15 @@ human-readable lineage entry point.
 
 ## Exact next action
 
-The responsible human decides how to handle the two public review packages,
-using the package-inventory return below (`PMD-20261125-001`); the items
-reported privately in that session have been judged acceptable to remain
-public. The Project Manager records the return; it
-has recorded the `PMR-144` and `PMR-122` returns as verified at `5238a90`, and
-their formal closure is its action. Pushing the local return commit publishes
-it; that remains a separate responsible-human decision, through the
-publication gate and with a same-turn confirmation. Open `PMR-066` (tasking
-startup adoption) stays for a separate session.
+The responsible human reports the package-inventory return below
+(`PMD-20261125-001`), including the handling decision it records, to the
+Project Manager, which records the coordination decision and raises any
+request to align this repository's rules with it. The Project Manager has
+recorded the `PMR-144` and `PMR-122` returns as verified at `5238a90`, and
+their formal closure is its action. Pushing the local return commits
+publishes them; that remains a separate responsible-human decision, through
+the publication gate and with a same-turn confirmation. Open `PMR-066`
+(tasking startup adoption) stays for a separate session.
 
 ## Restart commands
 
@@ -281,6 +281,20 @@ above, made this return. The decision allocated no request ID.
   no containment is requested for them. The overall handling of the two
   packages, including their `Distribution: private` classification and
   uncleared dependencies, remains the human's open decision.
+- **Responsible-human handling decision (2026-11-25T04:47Z):** Offered one
+  choice for the two packages already public ((a) keep them public as they
+  are, (b) delete them in a new commit, or (c) contain them) and one for
+  future provenance packages ((a) they may be published, each push through
+  the publication gate with the responsible human's confirmation, (b) keep
+  them off the public remote, or (c) make the repository private), the
+  responsible human answered exactly `"a and a"`. Both packages therefore
+  stay public as they are, and future packages may be published, each push
+  passing the gate with a same-turn confirmation. This settles the open
+  handling question in the previous bullet. It is the human's statement
+  recorded for the Project Manager, not a Project Manager decision record or
+  a `HUMAN-PROMOTION-NNN` record; it changes no `Distribution` field, rule,
+  or package here, clears no evidence dependency, decides no licensing or
+  redistribution, and approves no specific push.
 - **Carry record:** A direct ordinary session started by the responsible
   human with the runbook command
   (`workspace://project-manager/outbox/OWNER-RUNBOOK.md`, "P1 Inventory
