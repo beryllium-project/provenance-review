@@ -24,13 +24,54 @@ publication gates remain authoritative.
 - Do not execute, build, test, compile, source, import, or install dependencies
   from a reviewed repository.
 - Trusted execution is limited to provenance-review scripts, read-only Git
-  inspection, source retrieval, hashing, format identification, and text
-  extraction.
+  inspection, source retrieval, hashing, format identification, text
+  extraction, and the two publication-gate commands in `## Publication gate`
+  over this repository.
 - Never access credentials or bypass authentication, paywalls, robots rules,
   network controls, or licence restrictions.
 - Never modify a reviewed repository, sibling component, or its metadata.
 - Stop and ask the user if the requested target, revision, ownership, or
   permitted evidence boundary is unclear.
+
+## Publication gate
+
+`origin`, `beryllium-project/provenance-review`, is a public repository
+(`PMD-20261012-002`), so every push to it publishes, including any review
+package whatever its `Distribution` classification.
+
+Before any push to a public remote, public repository creation, visibility
+change, or public release, pull-request, issue, or wiki text, and whenever the
+user says `check publication gate` or an obvious variant, the agent loads the
+user-level `beryllium-publication-gate` skill (`PMD-20261108-001`) and applies
+its procedure to this repository:
+
+```sh
+python3 -I -B ~/.config/beryllium/publication-gate/bin/publication-gate check --repo . --remote <remote>
+```
+
+Before public repository creation or a visibility change, after fetching every
+ref including tags, the procedure also requires:
+
+```sh
+python3 -I -B ~/.config/beryllium/publication-gate/bin/publication-gate audit --repo . --all-refs
+```
+
+The agent continues only on exit 0 and stops on exit 1 (a finding) or 2 (gate
+not installed, denylist unusable, or visibility undetermined), or when no
+result is available; it then does not push, create a repository, change
+visibility, or submit text. Hooks are never bypassed, whether by
+`git push --no-verify`, `-c core.hooksPath=...`, or otherwise. A non-public
+model is called `unlisted`, with nothing else said about it. Passing the gate
+is not publication approval; each push, repository creation, visibility
+change, and public submission still needs the responsible human's explicit
+same-turn confirmation.
+
+An ordinary session in this repository runs both commands itself; they are
+admitted among its trusted commands above. The `provenance-review`
+orchestrator and its specialists never push, create a repository, change
+visibility, or submit public text, and both commands are outside the
+`execute` allowlist in the orchestrator profile. On `check publication gate`,
+the orchestrator gives the human the exact command instead of running it.
 
 ## Provenance claims
 

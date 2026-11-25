@@ -89,6 +89,10 @@ bash ./tests/validate-agent.sh
 git diff --check
 ```
 
-A private `origin` remote is configured at
-`https://github.com/beryllium-project/provenance-review.git`. No publication
-or release workflow is configured.
+`origin` is the public repository
+`https://github.com/beryllium-project/provenance-review.git`, kept public by
+the responsible human's decision (`PMD-20261012-002`), so every push to it
+publishes. Before any push, `check publication gate` loads the user-level
+`beryllium-publication-gate` skill; see `## Publication gate` in
+[.github/copilot-instructions.md](.github/copilot-instructions.md). Passing
+the gate is not publication approval. No release workflow is configured.

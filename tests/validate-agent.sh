@@ -40,6 +40,26 @@ expect_failure() {
     fi
 }
 
+flatten_text() {
+    tr -s '[:space:]' ' '
+}
+
+markdown_section() {
+    awk -v heading="$2" '
+        $0 == heading {
+            active = 1
+            print
+            next
+        }
+        active && /^## / {
+            exit
+        }
+        active {
+            print
+        }
+    ' "$1"
+}
+
 copy_fixture() {
     local destination_parent=$1
     mkdir -p -- "$destination_parent" || return 1
@@ -431,6 +451,43 @@ if ((${#contract_files[@]} > 0)); then
         fail "agent/skill contracts must state append-only expectations"
     grep -Fq 'prior-art-summary.md' "${contract_files[@]}" ||
         fail "agent/skill contracts must require prior-art-summary.md"
+fi
+
+# PMR-144 (PMD-20261108-001): the shared publication gate is mapped to its
+# trigger phrase and admitted for ordinary repository sessions only.
+instructions=$repository_root/.github/copilot-instructions.md
+if [[ -f $instructions ]]; then
+    [[ $(grep -c '^## Publication gate$' "$instructions") == 1 ]] ||
+        fail "instructions must contain exactly one ## Publication gate section"
+    gate_section=$(markdown_section "$instructions" '## Publication gate')
+    for gate_command in \
+        'python3 -I -B ~/.config/beryllium/publication-gate/bin/publication-gate check --repo . --remote <remote>' \
+        'python3 -I -B ~/.config/beryllium/publication-gate/bin/publication-gate audit --repo . --all-refs'; do
+        printf '%s\n' "$gate_section" | grep -Fxq -- "$gate_command" ||
+            fail "publication gate section must give the exact command: $gate_command"
+    done
+    flat_gate_section=$(printf '%s\n' "$gate_section" | flatten_text)
+    for phrase in \
+        '`origin`, `beryllium-project/provenance-review`, is a public repository (`PMD-20261012-002`), so every push to it publishes' \
+        'Before any push to a public remote, public repository creation, visibility change, or public release, pull-request, issue, or wiki text' \
+        'whenever the user says `check publication gate` or an obvious variant, the agent loads the user-level `beryllium-publication-gate` skill (`PMD-20261108-001`)' \
+        'Before public repository creation or a visibility change, after fetching every ref including tags' \
+        'continues only on exit 0 and stops on exit 1 (a finding) or 2' \
+        'Hooks are never bypassed' \
+        'A non-public model is called `unlisted`, with nothing else said about it.' \
+        'Passing the gate is not publication approval' \
+        'both commands are outside the `execute` allowlist in the orchestrator profile' \
+        'the orchestrator gives the human the exact command instead of running it'; do
+        [[ $flat_gate_section == *"$phrase"* ]] ||
+            fail "publication gate section must state: $phrase"
+    done
+    flatten_text <"$instructions" |
+        grep -Fq -- 'and the two publication-gate commands in `## Publication gate` over this repository' ||
+        fail "trusted execution must admit the two publication-gate commands"
+fi
+if [[ -f $orchestrator ]] &&
+    grep -Eq 'bin/publication-gate|^ *- `?python3' "$orchestrator"; then
+    fail "orchestrator execute allowlist must not admit the publication gate"
 fi
 
 fixture=$repository_root/tests/fixtures/valid-review/PRV-20000101-001-synthetic-fixture
