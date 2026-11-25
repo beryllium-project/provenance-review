@@ -29,9 +29,10 @@ human-readable lineage entry point.
 - Remote: public `origin` at
   `https://github.com/beryllium-project/provenance-review.git`, kept public by
   the responsible human (`PMD-20261012-002`); every push to it publishes
-- Repository history: last-fetched `origin/main` is `9bfbab3`; local `main` is
-  3 commits ahead with the `PMR-144` and `PMR-122` work and their return, none
-  pushed
+- Repository history: `origin/main` is `5238a90`, which holds the `PMR-144`
+  and `PMR-122` work and return (pushed 2026-11-25 UTC; an anonymous read at
+  2026-11-25T01:23:26Z confirmed it); local `main` is 1 commit ahead with the
+  package-inventory return below, not pushed
 - Implementation: complete and validated
 - Model: every agent profile pins `claude-opus-5.5`; reasoning effort `max`
   and context tier `long_context` are invocation defaults (`PMR-122`)
@@ -48,11 +49,14 @@ human-readable lineage entry point.
 
 ## Exact next action
 
-The Project Manager verifies the `PMR-144` and `PMR-122` returns below and
-closes both requests. Pushing the three local commits publishes them; that
-remains a separate responsible-human decision, through the publication gate
-and with a same-turn confirmation. Open `PMR-066` (tasking startup adoption)
-stays for a separate session.
+The responsible human decides how to handle the two public review packages,
+using the package-inventory return below (`PMD-20261125-001`) and the details
+given privately in that session. The Project Manager records the return; it
+has recorded the `PMR-144` and `PMR-122` returns as verified at `5238a90`, and
+their formal closure is its action. Pushing the local return commit publishes
+it; that remains a separate responsible-human decision, through the
+publication gate and with a same-turn confirmation. Open `PMR-066` (tasking
+startup adoption) stays for a separate session.
 
 ## Restart commands
 
@@ -194,3 +198,111 @@ commit, with this single return commit. Facts common to both are under
   file changed. Open `PMR-066` was neither performed nor un-parked, and the
   parent tasking resolver was not run. No push, visibility change,
   publication, release, acceptance, or other human gate changed.
+
+### Package inventory (`PMD-20261125-001`)
+
+A later direct session, separate from the `PMR-144` and `PMR-122` carry
+above, made this return. The decision allocated no request ID.
+
+| Related IDs | Result | Evidence | Validation | Repository state | Requested Project Manager action |
+| --- | --- | --- | --- | --- | --- |
+| `PMD-20261125-001`; packages `PRV-20260828-001` and `PRV-20260901-001` | `completed` | Inventory bound to commit `5238a9034cec92050d4c28beb3c053ecc58cbf5e`, package trees `a9387ac0c37734212a2e4384db6673a08e04029e` and `375a93677596d12064e19b0a625c7596245c6203`; return commit `SELF`; return path `HANDOFF.md` | `bash ./tests/validate-agent.sh`: `validate-agent: OK`, exit 0; `git diff --check`: passed; `python3 -I -B ./scripts/render-review.py --check reviews/PRV-20260828-001-helium-te-security-architecture`: OK, exit 0; known failures: none | `main` / `origin/main`; at `SELF`, 1 ahead and 0 behind `origin/main` `5238a90`, clean; an anonymous read of `origin` at 2026-11-25T01:23:26Z showed `HEAD` and `main`, its only branch, at `5238a90` and no tags; no fetch or push; active session is `self` until it ends | Record the inventory and put the handling of both packages to the responsible human, who holds the private details; do not infer clearance, promotion, licensing, containment, a push, or any other human gate |
+
+- **Publicly reachable:** All 38 package files at `5238a90`: 26 in
+  `reviews/PRV-20260828-001-helium-te-security-architecture/` (12 Markdown
+  files plus 13 HTML pages and a stylesheet under `html/`) and 12 Markdown
+  files in `reviews/PRV-20260901-001-policy-install-readback/`. Earlier
+  package states in `684d9bf`, `20bc43e`, and `d698e75` (first package) and
+  `86d9260` (second) are also readable. Text that later commits removed holds
+  earlier wording, locators, and ID lists, no class of material absent at
+  `5238a90`. This history has never deleted or renamed a file, and
+  `sources/`, `inbox/`, and `scratch/` have only ever held their `README.md`
+  files. The first package's `html/` pages are an exact rendering of its
+  Markdown; the second package has no HTML. When the packages first became
+  publicly readable, and whether forks, clones, caches, or indexes hold
+  copies, cannot be determined from local evidence.
+- **Present in the public text (classes only):** bibliographic data,
+  canonical URLs, and section locators for public sources, with paper titles
+  the only quotations from them; SHA-256 digests of retained source copies
+  and of the private capture helper; private-source locators, namely
+  repository and component names, commit and blob IDs, branch names, file
+  paths, line ranges, symbol names, commit times, and authorship and
+  co-authorship metadata; private Copilot session metadata in the second
+  package (session IDs, turn and event indices, tool times, a task title, and
+  session counts); a small number of short verbatim fragments, a few words
+  each, from private commits, target documents, target code, and session
+  records; analytical paraphrase of private code, planning, and session
+  content, including threat and limitation analysis of the private target
+  (`assurance-practices.md` and `report.md` in the second package); and
+  restricted-report titles and cover-page restriction notes only
+  (`PRV-20260828-001-E0029` and the matching inaccessible-resource records).
+- **Not found:** source or document text beyond those fragments, code bodies,
+  session transcripts, retained source copies, restricted-report content,
+  credentials or tokens, email addresses, or absolute local filesystem paths.
+- **Only referenced, not present:** the private Helium target's source,
+  documents, tests, history, and retained agent reviews; private Beryllium
+  source, planning records, and history; Copilot session records in the cloud
+  and local session stores; retained paper copies held in sibling research
+  corpora; restricted reports, which were not accessed; former full-history
+  commits that no longer resolve; the private capture bundle under ignored
+  `scratch/` and the private helper-isolation manifest; and restricted
+  Microsoft material, which the packages state was neither opened nor copied.
+- **Still needing clearance (unchanged):** `PRV-20260828-001`, 98 of 127
+  evidence records: every `E0001`-`E0127` record except the 29 listed in its
+  `publication-checklist.md` amendment. By class: private target 16, private
+  Beryllium research 17 (8 superseded), private review metadata 17,
+  restricted-report metadata 1, public papers with retained copies of unknown
+  redistribution 8, public inaccessible-resource metadata with unknown or
+  not-approved redistribution 26, and superseded or withdrawn public records
+  kept for traceability 13. `PRV-20260901-001`, 21 of 26: `E0001`-`E0013`,
+  `E0016`, `E0018`-`E0021`, and `E0024`-`E0026`. By class: private session
+  records 5, private target 3, private Beryllium 2, an unresolvable
+  former-history record 1, public papers with retained copies of unknown
+  redistribution 4, and private review metadata including the earlier review
+  6. Both checklists still record `Distribution: private`, blocked
+  publication and licensing decisions, and no human promotion record.
+- **Bearing on handling (nothing decided):** The first package's scope
+  excludes public disclosure of private identifiers and source excerpts, and
+  the second approves no target-derived identifier or private phrase for
+  public disclosure beyond one query phrase (each package's `scope.md`
+  `SCOPE-001`). The public text nonetheless carries the private locators,
+  metadata, and fragments listed above. Removing anything already published
+  would need a history rewrite or a visibility change; neither is decided
+  here.
+- **Private notification:** During the inventory the owner paused once under
+  the decision's disclosure rule and notified the responsible human privately
+  in the session; the human directed the read-only inventory to continue.
+  Items needing the human's judgment were given privately and are deliberately
+  not identified in this record.
+- **Carry record:** A direct ordinary session started by the responsible
+  human with the runbook command
+  (`workspace://project-manager/outbox/OWNER-RUNBOOK.md`, "P1 Inventory
+  public provenance packages"); the session's process command line showed
+  `--model claude-opus-5.5 --reasoning-effort max --context long_context`.
+  Read-only file tools consulted the decision record, that runbook section,
+  `workspace://project-manager/templates/owner-return.md`, and the parent
+  `SOT.md` and `COMPONENTS.md`. Two read-only shell commands read sibling
+  paths, contrary to the instruction to run no parent or sibling command: a
+  directory listing of `workspace://project-manager/templates/` and a text
+  search of `workspace://project-manager/outbox/OWNER-RUNBOOK.md`. Neither
+  made a Git call or a write, and no other parent or sibling command ran. In
+  this repository the session ran
+  only read-only Git inspection, text extraction over the bound package files,
+  `render-review.py --check`, one anonymous `git ls-remote` of the `origin`
+  URL with user Git configuration and credential helpers disabled, process
+  inspection, and the validation above.
+- **Baseline and session state:** `5238a9034cec92050d4c28beb3c053ecc58cbf5e`
+  on clean `main`, 0 ahead and 0 behind `origin/main`, with no Git lock,
+  stash, or additional worktree. At the start, the only other process in this
+  component was the terminal shell that launched this session; this session
+  is the sole writer until it ends.
+- **Handoff correction:** This return also updates the repository-history
+  line and the exact next action above, which predated the push of `5238a90`.
+- **Exclusions preserved:** No package, rule, template, script, test, source
+  metadata, remote, branch, tag, or visibility changed; existing history was
+  not rewritten; nothing was pushed; no parent or sibling file was written.
+  No retained source copy, quarantine or inbox content, session store, or
+  other non-public source material was opened; outside this repository only
+  the Project Manager coordination files listed above were read. This return
+  grants no clearance, promotion, licensing, publication, containment, or
+  other human gate.
