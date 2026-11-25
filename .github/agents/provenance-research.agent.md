@@ -2,7 +2,7 @@
 name: provenance-research
 description: Perform write-disabled provenance research across approved local research and public primary sources, including source freshness, negative queries, and inaccessible-resource tracking.
 tools: ["read", "search", "web"]
-model: gpt-5.6-sol
+model: claude-opus-5.5
 user-invocable: false
 ---
 

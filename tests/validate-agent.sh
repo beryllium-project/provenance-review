@@ -490,6 +490,42 @@ if [[ -f $orchestrator ]] &&
     fail "orchestrator execute allowlist must not admit the publication gate"
 fi
 
+# PMR-122 (PMD-20261006-001): every agent profile pins the single project
+# model, and reasoning effort and context tier are stated invocation defaults.
+profile_count=0
+for profile_path in "$repository_root"/.github/agents/*.agent.md; do
+    [[ -f $profile_path ]] || continue
+    profile_count=$((profile_count + 1))
+    profile_models=$(awk '
+        NR == 1 && $0 == "---" {
+            active = 1
+            next
+        }
+        active && $0 == "---" {
+            exit
+        }
+        active && /^model:/ {
+            print
+        }
+    ' "$profile_path")
+    [[ $profile_models == 'model: claude-opus-5.5' ]] ||
+        fail "${profile_path#"$repository_root/"} must pin exactly model: claude-opus-5.5"
+done
+((profile_count > 0)) || fail "no agent profiles found under .github/agents"
+invocation_defaults='model `claude-opus-5.5` with reasoning effort `max` and context tier `long_context` (`PMD-20261006-001`)'
+for contract in \
+    "$repository_root/.github/copilot-instructions.md" \
+    "$orchestrator"; do
+    [[ -f $contract ]] || continue
+    flatten_text <"$contract" | grep -Fq -- "$invocation_defaults" ||
+        fail "${contract#"$repository_root/"} must state the invocation defaults"
+done
+if [[ -f $orchestrator ]] &&
+    ! flatten_text <"$orchestrator" |
+    grep -Fq -- 'Pass all three values for each specialist invocation.'; then
+    fail "orchestrator must pass the invocation defaults to each specialist"
+fi
+
 fixture=$repository_root/tests/fixtures/valid-review/PRV-20000101-001-synthetic-fixture
 if [[ -d $fixture ]]; then
     bash "$repository_root/scripts/validate-review.sh" "$fixture" ||

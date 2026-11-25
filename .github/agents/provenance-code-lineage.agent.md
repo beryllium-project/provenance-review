@@ -2,7 +2,7 @@
 name: provenance-code-lineage
 description: Perform write-disabled code and repository-history analysis for a bounded provenance aspect, separating implementation authorship from conceptual origin.
 tools: ["read", "search"]
-model: gpt-5.6-sol
+model: claude-opus-5.5
 user-invocable: false
 ---
 

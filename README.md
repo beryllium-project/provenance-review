@@ -26,17 +26,20 @@ and contribution-specific credit framing at a glance.
 - Reports default to `private`. Publication, release, licensing approval,
   attribution approval, and public claims remain human gates.
 
-## Planned invocation
+## Invocation
 
-After implementation, select the project custom agent:
+Every session uses model `claude-opus-5.5` with reasoning effort `max` and
+context tier `long_context` (`PMD-20261006-001`). From this repository, start
+the project custom agent with:
 
-```text
-/agent provenance-review
+```sh
+copilot --model claude-opus-5.5 --reasoning-effort max --context long_context --agent provenance-review
 ```
 
-The agent will ask for the target repository, exact revision or explicitly
-approved working-tree state, the aspects to analyze, exclusions, chronology
-window, review depth, and distribution classification.
+In a session already running with those values, `/agent provenance-review`
+selects it. The agent will ask for the target repository, exact revision or
+explicitly approved working-tree state, the aspects to analyze, exclusions,
+chronology window, review depth, and distribution classification.
 
 ## Repository layout
 
