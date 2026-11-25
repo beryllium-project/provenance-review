@@ -31,8 +31,8 @@ human-readable lineage entry point.
   the responsible human (`PMD-20261012-002`); every push to it publishes
 - Repository history: `origin/main` is `5238a90`, which holds the `PMR-144`
   and `PMR-122` work and return (pushed 2026-11-25 UTC; an anonymous read at
-  2026-11-25T01:23:26Z confirmed it); local `main` is 1 commit ahead with the
-  package-inventory return below, not pushed
+  2026-11-25T01:23:26Z confirmed it); local `main` is 2 commits ahead with the
+  package-inventory return below and its human-judgment addendum, not pushed
 - Implementation: complete and validated
 - Model: every agent profile pins `claude-opus-5.5`; reasoning effort `max`
   and context tier `long_context` are invocation defaults (`PMR-122`)
@@ -50,8 +50,9 @@ human-readable lineage entry point.
 ## Exact next action
 
 The responsible human decides how to handle the two public review packages,
-using the package-inventory return below (`PMD-20261125-001`) and the details
-given privately in that session. The Project Manager records the return; it
+using the package-inventory return below (`PMD-20261125-001`); the items
+reported privately in that session have been judged acceptable to remain
+public. The Project Manager records the return; it
 has recorded the `PMR-144` and `PMR-122` returns as verified at `5238a90`, and
 their formal closure is its action. Pushing the local return commit publishes
 it; that remains a separate responsible-human decision, through the
@@ -274,6 +275,12 @@ above, made this return. The decision allocated no request ID.
   in the session; the human directed the read-only inventory to continue.
   Items needing the human's judgment were given privately and are deliberately
   not identified in this record.
+- **Responsible-human judgment (2026-11-25 UTC):** After return commit
+  `535a591189bee5ca59dea4e582d3aebd9e0b1514`, the responsible human reviewed
+  the privately reported items and judged both acceptable to remain public;
+  no containment is requested for them. The overall handling of the two
+  packages, including their `Distribution: private` classification and
+  uncleared dependencies, remains the human's open decision.
 - **Carry record:** A direct ordinary session started by the responsible
   human with the runbook command
   (`workspace://project-manager/outbox/OWNER-RUNBOOK.md`, "P1 Inventory
