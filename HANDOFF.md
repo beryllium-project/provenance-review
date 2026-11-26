@@ -1,6 +1,6 @@
 # Provenance review handoff
 
-**Last updated:** 2026-11-25 (UTC)
+**Last updated:** 2026-11-26 (UTC)
 
 ## Overall position
 
@@ -31,16 +31,22 @@ human-readable lineage entry point.
   the responsible human (`PMD-20261012-002`); every push to it publishes
 - Repository history: `origin/main` is `5238a90`, which holds the `PMR-144`
   and `PMR-122` work and return (pushed 2026-11-25 UTC; an anonymous read at
-  2026-11-25T01:23:26Z confirmed it); local `main` is 3 commits ahead with the
-  package-inventory return below and its two addenda, not pushed
+  2026-11-25T01:23:26Z confirmed it); local `main` is 5 commits ahead, not
+  pushed: the package-inventory return below and its two addenda, then the
+  `PMR-162` work and return
 - Implementation: complete and validated
 - Model: every agent profile pins `claude-opus-5.5`; reasoning effort `max`
   and context tier `long_context` are invocation defaults (`PMR-122`)
 - Publication gate: adopted (`PMR-144`); see `## Publication gate` in
-  `.github/copilot-instructions.md`
+  `.github/copilot-instructions.md`, whose publication wording is aligned
+  with `PMD-20261125-002` (`PMR-162`)
 - Publication status: the repository is public, so its pushed history,
   including the two review packages classified `Distribution: private`, is
-  publicly readable; no release, promotion, or publication approval exists
+  publicly readable. Under `PMD-20261125-002` those two packages stay public
+  as they are, and future packages may be published, each public push
+  passing the gate with the responsible human's explicit same-turn
+  confirmation. No release, promotion, evidence clearance, or approval of a
+  specific push exists
 - Validation: `bash ./tests/validate-agent.sh` and `git diff --check` pass
 - Prior-art contract: required for new and current reviews; numbered
   iterations are append-only and the latest projection is explicit
@@ -49,15 +55,13 @@ human-readable lineage entry point.
 
 ## Exact next action
 
-The responsible human reports the package-inventory return below
-(`PMD-20261125-001`), including the handling decision it records, to the
-Project Manager, which records the coordination decision and raises any
-request to align this repository's rules with it. The Project Manager has
-recorded the `PMR-144` and `PMR-122` returns as verified at `5238a90`, and
-their formal closure is its action. Pushing the local return commits
-publishes them; that remains a separate responsible-human decision, through
-the publication gate and with a same-turn confirmation. Open `PMR-066`
-(tasking startup adoption) stays for a separate session.
+The Project Manager verifies the `PMR-162` work and return commits recorded
+below and closes `PMR-162`. It has already recorded the responsible human's
+handling decision for the two public packages as `PMD-20261125-002` and
+closed `PMR-144` and `PMR-122`. Pushing the five local commits publishes
+them; that remains a separate responsible-human decision, through the
+publication gate and with a same-turn confirmation. Open `PMR-066` (tasking
+startup adoption) stays for a separate session.
 
 ## Restart commands
 
@@ -327,3 +331,120 @@ above, made this return. The decision allocated no request ID.
   the Project Manager coordination files listed above were read. This return
   grants no clearance, promotion, licensing, publication, containment, or
   other human gate.
+
+### PMR-162
+
+A later session, separate from every carry above, made this return. The
+Project Manager started it unattended under `PMD-20261126-002`, after the
+responsible human said `run the batch`; no human was present during it.
+
+| Related IDs | Result | Evidence | Validation | Repository state | Requested Project Manager action |
+| --- | --- | --- | --- | --- | --- |
+| `PMR-162`; `PMD-20261125-002` | `completed` | Work commit `7e95bdf8c1dbe719bd2aaa11ec2643d7f1ed7926`; return commit `SELF`; work paths `.github/agents/provenance-review.agent.md`, `.github/copilot-instructions.md`, `.github/skills/provenance-analysis/SKILL.md`, `README.md`, `reviews/README.md`, `templates/publication-checklist.md`, and `tests/validate-agent.sh`; return path `HANDOFF.md` | `bash ./tests/validate-agent.sh`: `validate-agent: OK`, exit 0, on the work tree before commit, at the work commit, and at `SELF`; `bash -n tests/validate-agent.sh`: passed; `git diff --check`: passed; the new checks fail against the unchanged `b249346` tree (39 errors, all from the new checks, and no other failure); no publication-gate command was run (see below); known failures: none | `main` / `origin/main`; at `SELF`, 5 ahead and 0 behind last-fetched `origin/main` `5238a90`, clean; no fetch or push; active session is `self` (this Project Manager-started unattended session) until it ends; it took no writer lock or reservation, so it releases none | Verify the work and return commits and close `PMR-162`; keep `PMR-066` open and separate; do not infer a push, promotion, evidence clearance, licensing, or any other human gate |
+
+- **Result detail:** The `## Publication gate` section of
+  `.github/copilot-instructions.md` now records that under
+  `PMD-20261125-002` the two packages already public, `PRV-20260828-001` and
+  `PRV-20260901-001`, stay public as they are; that the decision calls for no
+  package edit, relabelling, removal, history change, or visibility change
+  and covers those packages only as already published; that future packages
+  may be published push by push, each public push passing the gate and
+  receiving the responsible human's explicit same-turn confirmation for that
+  push; and that the decision is not a `HUMAN-PROMOTION-NNN` record and
+  approves no specific push. A second paragraph keeps distribution,
+  promotion, evidence clearance, and actual visibility distinct: a package's
+  `Distribution` does not determine its remote visibility or grant
+  permission to push, private-by-default intake and the existing promotion,
+  evidence-clearance, licensing, and redistribution checks remain in force,
+  and a push changes no classification and satisfies none of those checks.
+  `## Sources and distribution` points to the section.
+- **Other paths:** The orchestrator states the same rule at intake, says
+  that it and its specialists never push, create a repository, change
+  visibility, or submit public text, and adds a `publication boundary` item
+  to the `EFFECTIVE PROVENANCE SCOPE`; its `execute` allowlist is unchanged.
+  The skill opens its `## Publication gate` section with the distinction and
+  the decision, and its intake and evidence-handling text now say that
+  `Distribution` is not a visibility or push choice. `README.md` and
+  `reviews/README.md` state the rule, and the `README.md` validation
+  paragraph adds the same-turn confirmation. Of the new-package templates,
+  only `templates/publication-checklist.md` carries publication wording; it
+  now tells each new package that a push changes no classification or
+  checklist field and satisfies no check. Every new package still scaffolds
+  as `private`.
+- **Contract test:** `tests/validate-agent.sh` gains a `require_flat_text`
+  helper and a `PMR-162` block: four shared statements in all six policy
+  files, the two-package statement in four of them, the four-way
+  distinction in the instructions and skill, five statements inside the
+  instructions' gate section, the orchestrator's no-push statement and scope
+  item, the skill's no-push statement, and the template's no-field-change
+  statement.
+- **Unchanged by design:** No `reviews/PRV-*` package or its checklist, no
+  `Distribution` field, test fixture, script, or source metadata, and no
+  remote, branch, tag, visibility, or history changed. No promotion,
+  clearance, licensing, or redistribution decision was made or recorded, and
+  no inventory detail was copied into rules or tests. No responsible-human
+  question arose, so none is open from this request.
+- **Publication gate:** No gate command was run, because nothing was pushed
+  and the packet states that this session's Git-level push block rewrites
+  GitHub push addresses, so a gate run here would not be evidence about a
+  push. The responsible human's later push needs its own gate run and
+  same-turn confirmation.
+- **Carry record:** The packet
+  `workspace://project-manager/scratch/owner-unattended/20261126T093730Z-provenance-review-PMR-162.packet.md`
+  matched its given SHA-256
+  `ea35f6f76b77e1a3276085119c325ab84d78736056b3277b7904c878d477e1cc`, and
+  this repository's `HEAD` matched its expected
+  `b249346962523a8b7df702039fb1254664ccfde1`. The session's process command
+  line showed
+  `--model claude-opus-5.5 --reasoning-effort max --context long_context`
+  and deny rules for push, fetch, pull, remote, tag, and `gh`. The local
+  trusted-execution rule admits no sibling script (`PMR-066` is open), so,
+  as the packet directs, the parent tasking resolver was not run.
+  Read-only file reads instead found that
+  `workspace://project-manager/outbox/tasking/provenance-review.md` binds the
+  packet's Project Manager commit `af7340dcb87bb47d0474006f202f5733a1c5b79a`,
+  request blob `01e0358ad249149fc906545f7c404a8ae0a70659`, and startup
+  SHA-256
+  `76961c4a434e159c6874348dd74837da54c9c5e77002ba0ec2b151c558e0acfe`, and
+  that its `PMR-162` row matches the packet's action, basis, and note
+  exactly. `workspace://SOT.md` hashed to that SHA-256, and a
+  `git hash-object --no-filters` run from this repository over
+  `workspace://project-manager/outbox/component-requests.md`, which wrote
+  nothing, gave that request blob.
+- **Inputs outside this repository:** Read-only file reads (one of them a
+  Python text comparison of the packet with the tasking view), listings,
+  text searches, and hashes covered only the packet, `workspace://SOT.md`,
+  this component's entry in `workspace://COMPONENTS.md`, the tasking view
+  and request table above,
+  `workspace://project-manager/components/provenance-review.md`,
+  `workspace://project-manager/templates/owner-return.md`, `PMD-20261125-002`,
+  `PMD-20261126-002`, a listing of the decision records, and, for context
+  only, the "P2 PMR-162" section of
+  `workspace://project-manager/outbox/OWNER-RUNBOOK.md`. No Git command or
+  script ran in a parent or sibling repository, and no parent or sibling
+  file was written. The `cross-repo-collaboration` skill was not loaded: the
+  work applies a Project Manager decision record and consumes no sibling
+  research or analysis.
+- **Commands in this repository:** Read-only Git inspection, a
+  `git archive` of `b249346` extracted to a temporary directory outside the
+  repository for the baseline run (removed afterwards), the maintained
+  validation, read-only process inspection, and the two local commits.
+- **Baseline and session state:**
+  `b249346962523a8b7df702039fb1254664ccfde1` on clean `main`, 3 ahead and 0
+  behind last-fetched `origin/main` `5238a90`, with no Git lock, stash, or
+  additional worktree. Read-only process inspection at 2026-11-26T09:38:45Z
+  found only this session's own processes with a working directory in this
+  component; the other batch sessions observed ran in other components, and
+  no `owner-session.sh`, `owner-recovery.sh`, or `maintenance-reservation.sh`
+  process ran. This session is the sole writer until it ends. Any launcher
+  lock or reservation belongs to the Project Manager.
+- **Backup state:** `origin/main` remains
+  `5238a9034cec92050d4c28beb3c053ecc58cbf5e` as last fetched. The five local
+  commits `535a591`, `5b2ef38`, `b249346`, `7e95bdf`, and `SELF` have no
+  backup. `PMD-20261125-002` does not cover them, since it covers the two
+  packages only as already published; pushing them publishes them and needs
+  its own gate run and the responsible human's same-turn confirmation.
+- **Return commit:** `SELF`, the commit that adds this record; its full ID
+  is reported in the session's final response.
+- **Handoff correction:** This return also updates the last-updated date,
+  the current state, and the exact next action above.
