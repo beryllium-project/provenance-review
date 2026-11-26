@@ -36,13 +36,44 @@ rewritten to apply it.
   from a reviewed repository.
 - Trusted execution is limited to provenance-review scripts, read-only Git
   inspection, source retrieval, hashing, format identification, text
-  extraction, and the two publication-gate commands in `## Publication gate`
-  over this repository.
+  extraction, the one Project Manager tasking resolver command in
+  `## Project Manager startup discovery`, and the two publication-gate
+  commands in `## Publication gate` over this repository.
 - Never access credentials or bypass authentication, paywalls, robots rules,
   network controls, or licence restrictions.
 - Never modify a reviewed repository, sibling component, or its metadata.
 - Stop and ask the user if the requested target, revision, ownership, or
   permitted evidence boundary is unclear.
+
+## Project Manager startup discovery
+
+In an ordinary session in this repository and in the `provenance-review`
+orchestrator, `check Project Manager tasking` and obvious case, singular, or
+plural variants mean: run exactly this command from the registered logical
+workspace entry, this repository's root (`PMD-20260915-008`):
+
+```sh
+bash "${PWD%/*}/project-manager/scripts/project-tasking.sh" resolve .
+```
+
+This is the sole permitted sibling command. It is read-only startup discovery
+outside any provenance package: it is not target execution, needs no
+`EFFECTIVE PROVENANCE SCOPE` confirmation, and begins no review. No other
+form, mode, or argument of the resolver, and no other Project Manager or
+sibling script, is admitted. The write-disabled specialists never run it.
+
+Treat its validated output as discovery over
+`project-manager/outbox/component-requests.md`, not as authorization. Present
+every returned row with its `Assigned to` value; a row assigned to another
+component is cross-named coordination, not work for this component. When
+more than one is open, ask the human which request to perform before
+beginning owner work.
+
+If the resolver path is absent or validation fails, stop and tell the human
+to relaunch from the registered logical workspace entry or repair Project
+Manager tasking. Never search session history, a task/todo database,
+background agents, prior chat, or memory as a fallback, and never infer a
+PMR from those sources.
 
 ## Publication gate
 

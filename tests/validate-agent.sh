@@ -593,6 +593,77 @@ require_flat_text .github/skills/provenance-analysis/SKILL.md \
 require_flat_text templates/publication-checklist.md \
     'it changes no field in this checklist'
 
+# PMR-066 (PMD-20260915-008): `check Project Manager tasking` runs only the
+# exact fail-closed logical-entry resolver, the sole sibling command, as
+# startup discovery outside any provenance package, with no fallback source.
+pm_tasking_command='bash "${PWD%/*}/project-manager/scripts/project-tasking.sh" resolve .'
+for relative_path in \
+    .github/copilot-instructions.md \
+    .github/agents/provenance-review.agent.md; do
+    contract_path=$repository_root/$relative_path
+    [[ -f $contract_path ]] || continue
+    [[ $(grep -c '^## Project Manager startup discovery$' "$contract_path") == 1 ]] ||
+        fail "$relative_path must contain exactly one ## Project Manager startup discovery section"
+    tasking_section=$(markdown_section "$contract_path" \
+        '## Project Manager startup discovery')
+    printf '%s\n' "$tasking_section" | grep -Fxq -- "$pm_tasking_command" ||
+        fail "$relative_path tasking section must give the exact resolver command"
+    flat_tasking_section=$(printf '%s\n' "$tasking_section" | flatten_text)
+    for phrase in \
+        '`check Project Manager tasking`' \
+        'obvious case, singular, or plural variant' \
+        'registered logical workspace entry, this repository'\''s root' \
+        'This is the sole permitted sibling command.' \
+        'read-only startup discovery outside any provenance package: it is not target execution, needs no `EFFECTIVE PROVENANCE SCOPE` confirmation' \
+        'No other form, mode, or argument of the resolver, and no other Project Manager or sibling script, is admitted.' \
+        'The write-disabled specialists never run it.' \
+        'Treat its validated output as discovery over `project-manager/outbox/component-requests.md`, not as authorization.' \
+        'a row assigned to another component is cross-named coordination, not work for this component' \
+        'ask the human which request to perform before beginning owner work' \
+        'stop and tell the human to relaunch from the registered logical workspace entry or repair Project Manager tasking' \
+        'Never search session history, a task/todo database, background agents, prior chat, or memory as a fallback, and never infer a PMR from those sources.'; do
+        [[ $flat_tasking_section == *"$phrase"* ]] ||
+            fail "$relative_path tasking section must state: $phrase"
+    done
+done
+for relative_path in \
+    .github/copilot-instructions.md \
+    .github/agents/provenance-review.agent.md \
+    .github/skills/provenance-analysis/SKILL.md \
+    README.md; do
+    [[ -f $repository_root/$relative_path ]] || continue
+    require_text "$relative_path" "$pm_tasking_command"
+    [[ $(grep -o 'project-tasking\.sh' "$repository_root/$relative_path" |
+        wc -l) -eq 1 ]] ||
+        fail "$relative_path must name the Project Manager resolver only in its exact command"
+done
+for specialist in \
+    .github/agents/provenance-code-lineage.agent.md \
+    .github/agents/provenance-research.agent.md; do
+    if grep -Fq 'project-tasking.sh' "$repository_root/$specialist" 2>/dev/null; then
+        fail "$specialist must not be given the Project Manager resolver"
+    fi
+done
+require_flat_text .github/copilot-instructions.md \
+    'text extraction, the one Project Manager tasking resolver command in `## Project Manager startup discovery`, and the two publication-gate commands in `## Publication gate` over this repository.'
+require_flat_text .github/agents/provenance-review.agent.md \
+    'Apart from the exact startup resolver in `## Project Manager startup discovery` below, use `execute` only to invoke these repository-maintained entry points:'
+require_flat_text .github/agents/provenance-review.agent.md \
+    'target scripts, any other sibling script, or any other executable'
+require_flat_text .github/agents/provenance-review.agent.md \
+    'A selected request that asks for a provenance review still goes through Guided intake and the Scope confirmation gate.'
+require_flat_text .github/skills/provenance-analysis/SKILL.md \
+    'plus, outside any review, the exact Project Manager tasking resolver `bash "${PWD%/*}/project-manager/scripts/project-tasking.sh" resolve .` for startup discovery'
+require_flat_text .github/skills/provenance-analysis/SKILL.md \
+    'That resolver is not target execution and is never part of a review.'
+require_flat_text .github/skills/provenance-analysis/SKILL.md \
+    'target scripts, any other sibling script, or other commands'
+require_flat_text README.md \
+    'It is the sole permitted sibling command: startup discovery outside any provenance package, not target execution.'
+require_flat_text README.md 'Its rows are discovery, not authorization.'
+require_flat_text README.md \
+    'it never falls back to session history, a task/todo database, background agents, prior chat, or memory'
+
 fixture=$repository_root/tests/fixtures/valid-review/PRV-20000101-001-synthetic-fixture
 if [[ -d $fixture ]]; then
     bash "$repository_root/scripts/validate-review.sh" "$fixture" ||

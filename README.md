@@ -50,6 +50,22 @@ selects it. The agent will ask for the target repository, exact revision or
 explicitly approved working-tree state, the aspects to analyze, exclusions,
 chronology window, review depth, and distribution classification.
 
+In an ordinary session here and in the agent, `check Project Manager tasking`
+runs exactly this read-only command from the repository root, the registered
+logical workspace entry (`PMD-20260915-008`):
+
+```sh
+bash "${PWD%/*}/project-manager/scripts/project-tasking.sh" resolve .
+```
+
+It is the sole permitted sibling command: startup discovery outside any
+provenance package, not target execution. Its rows are discovery, not
+authorization. If it fails, the session stops and asks for a relaunch from the
+registered entry or a Project Manager tasking repair; it never falls back to
+session history, a task/todo database, background agents, prior chat, or
+memory. See `## Project Manager startup discovery` in
+[.github/copilot-instructions.md](.github/copilot-instructions.md).
+
 ## Repository layout
 
 ```text

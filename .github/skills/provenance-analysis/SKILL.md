@@ -24,8 +24,14 @@ approval.
   or its dependencies.
 - The orchestrator may execute only `scripts/new-review.sh`,
   `scripts/git-readonly.sh`, `scripts/validate-review.sh`, and
-  `tests/validate-agent.sh`. It must not execute arbitrary shell, direct Git,
-  network clients, package managers, target scripts, or other commands.
+  `tests/validate-agent.sh`, plus, outside any review, the exact Project
+  Manager tasking resolver
+  `bash "${PWD%/*}/project-manager/scripts/project-tasking.sh" resolve .`
+  for startup discovery under `## Project Manager startup discovery` in
+  `.github/copilot-instructions.md`. That resolver is not target execution
+  and is never part of a review. The orchestrator must not execute arbitrary
+  shell, direct Git, network clients, package managers, target scripts, any
+  other sibling script, or other commands.
 - All target Git and file-state metadata must be obtained through
   `scripts/git-readonly.sh` and passed to the code-lineage specialist as a
   sanitized bundle. The specialist has no execution tool. The bundle must not
