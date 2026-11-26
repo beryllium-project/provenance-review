@@ -31,12 +31,16 @@ human-readable lineage entry point.
   the responsible human (`PMD-20261012-002`); every push to it publishes
 - Repository history: `origin/main` is `5238a90`, which holds the `PMR-144`
   and `PMR-122` work and return (pushed 2026-11-25 UTC; an anonymous read at
-  2026-11-25T01:23:26Z confirmed it); local `main` is 5 commits ahead, not
-  pushed: the package-inventory return below and its two addenda, then the
-  `PMR-162` work and return
+  2026-11-25T01:23:26Z confirmed it); local `main` is 7 commits ahead, not
+  pushed: the package-inventory return below and its two addenda, the
+  `PMR-162` work and return, then the `PMR-066` work and return
 - Implementation: complete and validated
 - Model: every agent profile pins `claude-opus-5.5`; reasoning effort `max`
   and context tier `long_context` are invocation defaults (`PMR-122`)
+- Project Manager tasking: `check Project Manager tasking` runs only the
+  exact logical-entry resolver, the sole permitted sibling command
+  (`PMR-066`); see `## Project Manager startup discovery` in
+  `.github/copilot-instructions.md`
 - Publication gate: adopted (`PMR-144`); see `## Publication gate` in
   `.github/copilot-instructions.md`, whose publication wording is aligned
   with `PMD-20261125-002` (`PMR-162`)
@@ -55,22 +59,26 @@ human-readable lineage entry point.
 
 ## Exact next action
 
-The Project Manager verifies the `PMR-162` work and return commits recorded
-below and closes `PMR-162`. It has already recorded the responsible human's
+The Project Manager verifies the `PMR-066` work and return commits recorded
+below and closes `PMR-066`, and verifies and closes `PMR-162` from its own
+return below if it has not already done so. At Project Manager commit
+`af7340d`, which this session's packet binds, they were this component's
+only open requests. It has already recorded the responsible human's
 handling decision for the two public packages as `PMD-20261125-002` and
-closed `PMR-144` and `PMR-122`. Pushing the five local commits publishes
+closed `PMR-144` and `PMR-122`. Pushing the seven local commits publishes
 them; that remains a separate responsible-human decision, through the
-publication gate and with a same-turn confirmation. Open `PMR-066` (tasking
-startup adoption) stays for a separate session.
+publication gate and with a same-turn confirmation.
 
 ## Restart commands
 
 From this repository's canonical checkout, whose path the parent
-`COMPONENTS.md` records:
+`COMPONENTS.md` records (the third command is `check Project Manager
+tasking`, admitted by `PMR-066`):
 
 ```sh
 git status --short --branch
 sed -n '1,400p' HANDOFF.md
+bash "${PWD%/*}/project-manager/scripts/project-tasking.sh" resolve .
 bash ./tests/validate-agent.sh
 ```
 
@@ -448,3 +456,147 @@ responsible human said `run the batch`; no human was present during it.
   is reported in the session's final response.
 - **Handoff correction:** This return also updates the last-updated date,
   the current state, and the exact next action above.
+
+### PMR-066
+
+A later session, separate from every carry above, made this return. The
+Project Manager started it unattended under `PMD-20261126-002`, after the
+responsible human said `run the batch`; no human was present during it.
+That statement is the human start that the request's note requires, since
+this component has no adopted hidden owner.
+
+| Related IDs | Result | Evidence | Validation | Repository state | Requested Project Manager action |
+| --- | --- | --- | --- | --- | --- |
+| `PMR-066`; `PMD-20260915-008` | `completed` | Work commit `16ab7c67cd70251ae807853935832b55ce20b689`; return commit `SELF`; work paths `.github/agents/provenance-review.agent.md`, `.github/copilot-instructions.md`, `.github/skills/provenance-analysis/SKILL.md`, `README.md`, and `tests/validate-agent.sh`; return path `HANDOFF.md` | `bash ./tests/validate-agent.sh`: `validate-agent: OK`, exit 0, on the work tree before commit, at the work commit, and at `SELF`; `bash -n tests/validate-agent.sh`: passed; `git diff --check`: passed; the new checks fail against the unchanged `ee6caa8` tree (46 errors, all from the new checks, and no other failure); three throwaway mutations in a temporary copy (a second resolver form, the command as a list bullet, and a specialist given the resolver) each tripped only its intended new check; the resolver and the publication gate were not run (see below); known failures: none | `main` / `origin/main`; at `SELF`, 7 ahead and 0 behind last-fetched `origin/main` `5238a90`, clean; no fetch or push; active session is `self` (this Project Manager-started unattended session) until it ends; it took no writer lock or reservation, so it releases none | Verify the work and return commits and close `PMR-066`; do not infer a push, a live resolver run, or any human gate |
+
+- **Result detail:** A new `## Project Manager startup discovery` section,
+  in `.github/copilot-instructions.md` for ordinary sessions and the
+  orchestrator and in `.github/agents/provenance-review.agent.md`, maps
+  `check Project Manager tasking` and obvious case, singular, or plural
+  variants to exactly
+  `bash "${PWD%/*}/project-manager/scripts/project-tasking.sh" resolve .`,
+  run only from the registered logical workspace entry, this repository's
+  root. It is the sole permitted sibling command and read-only startup
+  discovery outside any provenance package: not target execution, needing
+  no `EFFECTIVE PROVENANCE SCOPE` confirmation, and beginning no review. No
+  other form, mode, or argument of the resolver and no other Project Manager
+  or sibling script is admitted, and the write-disabled specialists never
+  run it. Its validated output is discovery over
+  `project-manager/outbox/component-requests.md`, not authorization: each
+  row is shown with its `Assigned to` value, a row assigned to another
+  component is cross-named coordination, and with more than one open row
+  the human chooses. An absent path or failed validation stops the session
+  with a relaunch-or-repair message; session history, a task/todo database,
+  background agents, prior chat, and memory are never a fallback, and no
+  PMR is inferred from them.
+- **Command admission:** The trusted-execution rule admits that one
+  resolver command beside the two publication-gate commands. The
+  orchestrator's `execute` text now opens "Apart from the exact startup
+  resolver"; its four-entry maintained allowlist is unchanged, and "any
+  other sibling script" joins its prohibited list. A selected request that
+  asks for a provenance review still goes through Guided intake and the
+  Scope confirmation gate. The skill's execution bullet admits the same
+  command outside any review and states that it is never part of a review.
+- **Interface wording:** `README.md` `## Invocation` gives the command, the
+  sole-sibling-command and discovery-not-authorization rules, and the
+  no-fallback stop. This repository has no `AGENT-INTERFACE.md`.
+- **Contract test:** `tests/validate-agent.sh` gains a `PMR-066` block: one
+  section with the exact fenced command and twelve required statements in
+  both the instructions and the orchestrator; the exact command, with the
+  script named only once, in the instructions, orchestrator, skill, and
+  `README.md`; no resolver in either specialist profile; and the
+  trusted-execution, orchestrator, skill, and README boundary statements.
+- **Unchanged by design:** No `reviews/PRV-*` package, template, script,
+  test fixture, specialist profile, or source metadata changed, and no
+  publication, distribution, promotion, or clearance rule changed. No
+  responsible-human question arose, so none is open from this request.
+- **Resolver not run:** At startup the local trusted-execution rule admitted
+  no sibling script, so, as the packet directs, read-only file comparison
+  replaced the resolver (see the carry record). The session did not then
+  run the newly admitted command under rules it had itself just written,
+  and no human said `check Project Manager tasking`; its first live use is
+  left to a later session started from the logical workspace entry. Reading
+  the resolver's source found that `resolve` runs only read-only Git, with
+  hooks, credential helpers, and protocols disabled, before printing the
+  view. In this direct checkout `pwd` and `pwd -P` agree and no path
+  component is a symlink, so the logical-entry form names the same script,
+  Project Manager root, and workspace as the packet's environment-variable
+  form.
+- **For the Project Manager (information):** Owner-session packets give the
+  resolver as an absolute script path with `PM_TASKING_ROOT` and
+  `PM_TASKING_WORKSPACE` and a component name. That is not the admitted
+  form, so a later packet for this component would either give the
+  logical-entry form or keep its read-only comparison fallback.
+- **Publication gate:** No gate command was run, because nothing was pushed
+  and the packet states that this session's Git-level push block rewrites
+  GitHub push addresses, so a gate run here would not be evidence about a
+  push.
+- **Carry record:** The packet
+  `workspace://project-manager/scratch/owner-unattended/20261126T100408Z-provenance-review-PMR-066.packet.md`
+  matched its given SHA-256
+  `0747e8e100d01939ebd6a43c133353b759ae7eaa3903f5869f30143080080bfa`, and
+  this repository's `HEAD` matched its expected
+  `ee6caa8b291acf4eb4764df8c529190d0db8f33a`. The session's process command
+  line showed
+  `--model claude-opus-5.5 --reasoning-effort max --context long_context`
+  and deny rules for push, fetch, pull, remote, tag, and `gh`. Read-only
+  file reads found that
+  `workspace://project-manager/outbox/tasking/provenance-review.md` binds the
+  packet's Project Manager commit `af7340dcb87bb47d0474006f202f5733a1c5b79a`,
+  request blob `01e0358ad249149fc906545f7c404a8ae0a70659`, and startup
+  SHA-256
+  `76961c4a434e159c6874348dd74837da54c9c5e77002ba0ec2b151c558e0acfe`, and
+  that its `PMR-066` row matches the packet's action, basis, and note
+  exactly; the request table's own `PMR-066` row is `open` and `P3`.
+  `workspace://SOT.md` hashed to that SHA-256, and a
+  `git hash-object --no-filters` run from this repository over
+  `workspace://project-manager/outbox/component-requests.md`, which wrote
+  nothing, gave that request blob.
+- **Inputs outside this repository:** Read-only file reads (one a Python
+  text comparison of the packet with the tasking view), listings, text
+  searches, and hashes covered only the packet, `workspace://SOT.md`, this
+  component's and the Project Manager's entries and the batch note in
+  `workspace://COMPONENTS.md`, the tasking view and request table above,
+  `workspace://project-manager/outbox/tasking/README.md`,
+  `workspace://project-manager/components/provenance-review.md`,
+  `workspace://project-manager/templates/owner-return.md`,
+  `PMD-20260915-008`, `PMD-20261126-002`, listings of the decision records,
+  Project Manager scripts, tasking views, and the unattended-session
+  directory, and the source of
+  `workspace://project-manager/scripts/project-tasking.sh` and the
+  packet-step text of `workspace://project-manager/scripts/owner-session.sh`.
+  As wording precedent only, text searches and reads covered the
+  tasking-startup and adjacent text of `component://security-reviewer/`
+  (closed `PMR-065`: instructions, orchestrator, skill, interface, and
+  test) and `component://analysis-workbook/` (closed `PMR-063`:
+  instructions, orchestrator, and test). No Git command or
+  script ran in a parent or sibling repository, and no parent or sibling
+  file was written. The `cross-repo-collaboration` skill was not loaded:
+  the work applies a Project Manager decision record and consumes no
+  sibling research or analysis.
+- **Commands in this repository:** Read-only Git inspection, a
+  `git archive` of `ee6caa8` extracted to a temporary directory outside the
+  repository for the baseline and mutation runs (removed afterwards), the
+  maintained validation, read-only process and path inspection, and the two
+  local commits.
+- **Baseline and session state:**
+  `ee6caa8b291acf4eb4764df8c529190d0db8f33a` on clean `main`, 5 ahead and 0
+  behind last-fetched `origin/main` `5238a90`, with no Git lock, stash, or
+  additional worktree; `pwd` and `pwd -P` both gave this component's
+  registered direct-checkout entry. Read-only process inspection at about
+  10:05Z and again at 10:27:24Z found only this session's own processes
+  with a working directory in this component; the other running sessions
+  were in other components or directories, and no `owner-session.sh`,
+  `owner-recovery.sh`, or `maintenance-reservation.sh` process ran. This
+  session is the sole writer until it ends. Any launcher lock or
+  reservation belongs to the Project Manager.
+- **Backup state:** `origin/main` remains
+  `5238a9034cec92050d4c28beb3c053ecc58cbf5e` as last fetched. The seven
+  local commits `535a591`, `5b2ef38`, `b249346`, `7e95bdf`, `ee6caa8`,
+  `16ab7c6`, and `SELF` have no backup. Pushing them publishes them and
+  needs its own gate run and the responsible human's same-turn
+  confirmation.
+- **Return commit:** `SELF`, the commit that adds this record; its full ID
+  is reported in the session's final response.
+- **Handoff correction:** This return also updates the current state, the
+  exact next action, and the restart commands above.
