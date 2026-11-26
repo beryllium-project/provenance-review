@@ -40,6 +40,17 @@ decision, checklist basis, evidence IDs, and limitations. A bare promotion ID
 does not satisfy validation, and publication/licensing/sign-off decisions
 remain pending, blocked, or not requested.
 
+A package's `Distribution` is its approval state. This repository's `origin`
+is public, so a pushed package is publicly readable whatever its
+classification, and a package's `Distribution` does not determine its remote
+visibility or grant permission to push. Under `PMD-20261125-002`, the two
+packages already public, `PRV-20260828-001` and `PRV-20260901-001`, stay
+public as they are, and future packages may be published, each public push
+passing the publication gate and receiving the responsible human's explicit
+same-turn confirmation for that push. A push changes no classification and
+satisfies no promotion, evidence-clearance, licensing, or redistribution
+check.
+
 Completion phase rules are conditional: the six core phases must be exactly
 `Complete`; local research may be reasoned not applicable only when local
 inputs are unavailable or irrelevant; public landscape follows the explicit

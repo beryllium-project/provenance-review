@@ -11,6 +11,15 @@ Status: `Draft`
 must never record publication, licensing, sign-off, or responsible-human
 approval.
 
+This package's `Distribution` is its approval state. This repository's
+`origin` is public, so pushing this package there publishes it whatever its
+classification; its `Distribution` does not determine its remote visibility
+or grant permission to push. Each public push needs a passing publication
+gate and the responsible human's explicit same-turn confirmation for that
+push (`PMD-20261125-002`). A push changes no classification and satisfies no
+promotion, evidence-clearance, licensing, or redistribution check; it
+changes no field in this checklist.
+
 - [ ] Scope and exact target revision are confirmed.
 - [ ] Evidence sensitivity and redistribution status are reviewed.
 - [ ] Citations, alternatives, chronology, confidence, and limitations are verified.

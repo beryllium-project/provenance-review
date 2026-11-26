@@ -78,9 +78,10 @@ Collect and preserve:
    safe to send to public services.
 
 Every review package starts with `Distribution: private`. Intake records only
-the user's intended post-analysis distribution. Never scaffold a new package
-as `internal` or `public-candidate`. Never infer permission to include a dirty
-tree, use public research, disclose private identifiers, or promote a package.
+the user's intended post-analysis distribution, which is not a visibility or
+push choice; see Publication gate. Never scaffold a new package as `internal`
+or `public-candidate`. Never infer permission to include a dirty tree, use
+public research, disclose private identifiers, or promote a package.
 
 Present the complete `EFFECTIVE PROVENANCE SCOPE` and obtain explicit
 confirmation before research, specialist delegation, or package creation.
@@ -194,6 +195,8 @@ sensitivity, redistribution, or package distribution into one label. A
 project-controlled statement may be primary evidence of what the project
 claimed while remaining non-independent evidence of broader impact or
 originality. Public accessibility does not establish redistribution approval.
+Package `Distribution` also does not record or control whether the package is
+publicly readable; see Publication gate.
 
 ## Phase 4: internal code and history analysis
 
@@ -554,6 +557,28 @@ historical record. Do not claim that default validation proves historical
 immutability; mechanical history comparison requires a supplied baseline.
 
 ## Publication gate
+
+Keep distribution, promotion, evidence clearance, and actual visibility
+distinct. Package `Distribution` is approval state; promotion, below, is the
+only way to change it; evidence clearance is each evidence record's
+sensitivity and redistribution status, decided separately; and actual
+visibility follows only from what has been pushed to a public remote.
+
+This repository's `origin` is public (`PMD-20261012-002`), so a pushed
+package is publicly readable whatever its classification. Under
+`PMD-20261125-002`, the two packages already public, `PRV-20260828-001` and
+`PRV-20260901-001`, stay public as they are; the decision calls for no
+package edit, relabelling, removal, history change, or visibility change, and
+covers those packages only as already published. Future packages may be
+published, push by push: each public push must pass the publication gate in
+`.github/copilot-instructions.md` and receive the responsible human's
+explicit same-turn confirmation for that push. That decision is not a
+`HUMAN-PROMOTION-NNN` record and approves no specific push. A package's
+`Distribution` does not determine its remote visibility or grant permission
+to push. The orchestrator and its specialists never push, create a
+repository, change visibility, or submit public text. A push changes no
+classification and satisfies no promotion, evidence-clearance, licensing, or
+redistribution check below.
 
 All new reviews begin as `private`. Intake may record intended distribution,
 but promotion to `internal` or `public-candidate` is a separate explicit human

@@ -25,6 +25,15 @@ and contribution-specific credit framing at a glance.
   alternative explanations, confidence, and limitations.
 - Reports default to `private`. Publication, release, licensing approval,
   attribution approval, and public claims remain human gates.
+- A package's `Distribution` is its approval state. `origin` is public, so a
+  pushed package is publicly readable whatever its classification, and a
+  package's `Distribution` does not determine its remote visibility or grant
+  permission to push. Under `PMD-20261125-002`, the two packages already
+  public, `PRV-20260828-001` and `PRV-20260901-001`, stay public as they are,
+  and future packages may be published, each public push passing the
+  publication gate and receiving the responsible human's explicit same-turn
+  confirmation for that push. A push changes no classification and satisfies
+  no promotion, evidence-clearance, licensing, or redistribution check.
 
 ## Invocation
 
@@ -98,4 +107,5 @@ the responsible human's decision (`PMD-20261012-002`), so every push to it
 publishes. Before any push, `check publication gate` loads the user-level
 `beryllium-publication-gate` skill; see `## Publication gate` in
 [.github/copilot-instructions.md](.github/copilot-instructions.md). Passing
-the gate is not publication approval. No release workflow is configured.
+the gate is not publication approval; each push also needs the responsible
+human's explicit same-turn confirmation. No release workflow is configured.

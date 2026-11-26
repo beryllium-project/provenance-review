@@ -81,6 +81,18 @@ code, private repository names, internal URLs, credentials, or non-public
 identifiers. `public-candidate` is not publication, licensing, attribution,
 sign-off, or release approval.
 
+Package `Distribution` is approval state, not visibility. This repository's
+`origin` is public, so a pushed package is publicly readable whatever its
+classification: a package's `Distribution` does not determine its remote
+visibility or grant permission to push. Under `PMD-20261125-002`, future
+packages may be published, push by push; each public push must pass the
+publication gate in `.github/copilot-instructions.md` and receive the
+responsible human's explicit same-turn confirmation for that push. This
+orchestrator and its specialists never push, create a repository, change
+visibility, or submit public text. A push changes no classification and
+satisfies no promotion, evidence-clearance, licensing, or redistribution
+check.
+
 Resolve target state only through `scripts/git-readonly.sh`. Have that helper
 capture the repository identity, exact `HEAD`, requested revision, worktree
 status, and other approved read-only Git metadata without altering the target.
@@ -113,6 +125,10 @@ SCOPE` containing:
 - permitted local source registries and public-web use;
 - initial package distribution: `private`;
 - intended post-analysis distribution, if any;
+- publication boundary: `Distribution` is not visibility; this agent never
+  pushes, and each push to public `origin`, which publishes the package,
+  needs a passing publication gate and the responsible human's explicit
+  same-turn confirmation;
 - write boundary;
 - execution prohibition;
 - expected artifact directory under `reviews/`;

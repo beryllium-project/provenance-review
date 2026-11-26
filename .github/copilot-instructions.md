@@ -50,6 +50,27 @@ rewritten to apply it.
 (`PMD-20261012-002`), so every push to it publishes, including any review
 package whatever its `Distribution` classification.
 
+Under the responsible human's decision `PMD-20261125-002`, the two packages
+already public, `PRV-20260828-001` and `PRV-20260901-001`, stay public as
+they are. The decision calls for no package edit, relabelling, removal,
+history change, or visibility change, and covers those packages only as
+already published. Future packages may be published, push by push: each
+public push must pass the gate below and receive the responsible human's
+explicit same-turn confirmation for that push. The decision is not a
+`HUMAN-PROMOTION-NNN` record and approves no specific push.
+
+Keep distribution, promotion, evidence clearance, and actual visibility
+distinct. A package's `Distribution` is its approval state: it starts
+`private` and changes only through promotion, which needs a completed
+`HUMAN-PROMOTION-NNN` record. Evidence clearance concerns each evidence
+record's sensitivity and redistribution status and is decided separately.
+Actual visibility follows only from what has been pushed to a public remote.
+A package's `Distribution` does not determine its remote visibility or grant
+permission to push. Private-by-default intake and the existing promotion,
+evidence-clearance, licensing, and redistribution checks remain in force. A
+push changes no classification and satisfies no promotion,
+evidence-clearance, licensing, or redistribution check.
+
 Before any push to a public remote, public repository creation, visibility
 change, or public release, pull-request, issue, or wiki text, and whenever the
 user says `check publication gate` or an obvious variant, the agent loads the
@@ -122,6 +143,7 @@ the orchestrator gives the human the exact command instead of running it.
   `sources/quarantine/` or `inbox/`.
 - Reports default to `private`. `internal` and `public-candidate` require an
   explicit user choice; `public-candidate` is not publication approval.
+  `Distribution` is approval state, not visibility; see `## Publication gate`.
 - Never copy `../osr-claude/sources/restricted-microsoft/` into tracked or
   public artifacts.
 

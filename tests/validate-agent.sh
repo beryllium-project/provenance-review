@@ -60,6 +60,16 @@ markdown_section() {
     ' "$1"
 }
 
+require_flat_text() {
+    local relative_path=$1
+    local text=$2
+    if [[ ! -f $repository_root/$relative_path ]] ||
+        ! flatten_text <"$repository_root/$relative_path" |
+        grep -Fq -- "$text"; then
+        fail "$relative_path must state: $text"
+    fi
+}
+
 copy_fixture() {
     local destination_parent=$1
     mkdir -p -- "$destination_parent" || return 1
@@ -525,6 +535,63 @@ if [[ -f $orchestrator ]] &&
     grep -Fq -- 'Pass all three values for each specialist invocation.'; then
     fail "orchestrator must pass the invocation defaults to each specialist"
 fi
+
+# PMR-162 (PMD-20261125-002): publication wording keeps distribution,
+# promotion, evidence clearance, and actual visibility distinct, leaves the
+# two already-public packages as they are, and requires a passing gate and
+# explicit same-turn human confirmation for each public push.
+publication_policy_files=(
+    .github/copilot-instructions.md
+    .github/agents/provenance-review.agent.md
+    .github/skills/provenance-analysis/SKILL.md
+    README.md
+    reviews/README.md
+    templates/publication-checklist.md
+)
+for relative_path in "${publication_policy_files[@]}"; do
+    for phrase in \
+        '`PMD-20261125-002`' \
+        '`Distribution` does not determine its remote visibility or grant permission to push' \
+        'explicit same-turn confirmation for that push' \
+        'push changes no classification and satisfies no promotion, evidence-clearance, licensing, or redistribution check'; do
+        require_flat_text "$relative_path" "$phrase"
+    done
+done
+for relative_path in \
+    .github/copilot-instructions.md \
+    .github/skills/provenance-analysis/SKILL.md \
+    README.md \
+    reviews/README.md; do
+    require_flat_text "$relative_path" \
+        'the two packages already public, `PRV-20260828-001` and `PRV-20260901-001`, stay public as they are'
+done
+for relative_path in \
+    .github/copilot-instructions.md \
+    .github/skills/provenance-analysis/SKILL.md; do
+    require_flat_text "$relative_path" \
+        'Keep distribution, promotion, evidence clearance, and actual visibility distinct.'
+done
+if [[ -f $instructions ]]; then
+    flat_policy_section=$(markdown_section "$instructions" '## Publication gate' |
+        flatten_text)
+    for phrase in \
+        'The decision calls for no package edit, relabelling, removal, history change, or visibility change, and covers those packages only as already published.' \
+        'Future packages may be published, push by push: each public push must pass the gate below' \
+        'The decision is not a `HUMAN-PROMOTION-NNN` record and approves no specific push.' \
+        'Actual visibility follows only from what has been pushed to a public remote.' \
+        'Private-by-default intake and the existing promotion, evidence-clearance, licensing, and redistribution checks remain in force.'; do
+        [[ $flat_policy_section == *"$phrase"* ]] ||
+            fail "publication gate section must state: $phrase"
+    done
+fi
+require_flat_text .github/agents/provenance-review.agent.md \
+    'This orchestrator and its specialists never push, create a repository, change visibility, or submit public text.'
+require_flat_text .github/agents/provenance-review.agent.md \
+    '- publication boundary: `Distribution` is not visibility; this agent never pushes'
+require_flat_text .github/skills/provenance-analysis/SKILL.md \
+    'The orchestrator and its specialists never push, create a repository, change visibility, or submit public text.'
+require_flat_text templates/publication-checklist.md \
+    'it changes no field in this checklist'
 
 fixture=$repository_root/tests/fixtures/valid-review/PRV-20000101-001-synthetic-fixture
 if [[ -d $fixture ]]; then
